@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GreenObasket - Fresh From Farm to Your Table</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, rgba(46, 204, 113, 0.9), rgba(39, 174, 96, 0.9)), 
+                        url('https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80') center/cover;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .bg-slideshow {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .bg-slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            transition: opacity 3s ease-in-out;
+        }
+
+        .bg-slide.active {
+            opacity: 1;
+        }
+
+        .bg-slide:nth-child(1) {
+            background-image: linear-gradient(135deg, rgba(46, 204, 113, 0.7), rgba(39, 174, 96, 0.7)), 
+                             url('https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
+        }
+
+        .bg-slide:nth-child(2) {
+            background-image: linear-gradient(135deg, rgba(46, 204, 113, 0.7), rgba(39, 174, 96, 0.7)), 
+                             url('https://images.unsplash.com/photo-1500937386664-56d1dfef3854?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
+        }
+
+        .bg-slide:nth-child(3) {
+            background-image: linear-gradient(135deg, rgba(46, 204, 113, 0.7), rgba(39, 174, 96, 0.7)), 
+                             url('https://images.unsplash.com/photo-1605000797499-95a51c5269ae?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
+        }
+
+        .bg-slide:nth-child(4) {
+            background-image: linear-gradient(135deg, rgba(46, 204, 113, 0.7), rgba(39, 174, 96, 0.7)), 
+                             url('https://images.unsplash.com/photo-1625246333195-78d9c38ad449?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
+        }
+
+        .login-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+            animation: slideUp 0.8s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logo-section {
+            margin-bottom: 2rem;
+        }
+
+        .logo {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #2ecc71;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .logo i {
+            color: #f1c40f;
+            animation: rotate 3s ease-in-out infinite;
+        }
+
+        @keyframes rotate {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(10deg); }
+        }
+
+        .tagline {
+            color: #27ae60;
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 0.95rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-container {
+            margin-bottom: 2rem;
+        }
+
+        .form-title {
+            color: #2c3e50;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .input-group i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #2ecc71;
+            font-size: 1.1rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 15px 15px 15px 50px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #2ecc71;
+            box-shadow: 0 0 0 3px rgba(46, 204, 113, 0.1);
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(45deg, #2ecc71, #27ae60);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(45deg, #27ae60, #229954);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(46, 204, 113, 0.3);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .form-toggle {
+            margin-top: 1.5rem;
+        }
+
+        .form-toggle p {
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .toggle-link {
+            color: #2ecc71;
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .toggle-link:hover {
+            color: #27ae60;
+        }
+
+        .features {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .feature {
+            text-align: center;
+            flex: 1;
+        }
+
+        .feature i {
+            font-size: 2rem;
+            color: #2ecc71;
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 0.3rem;
+        }
+
+        .feature-desc {
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        /* Forgot Password Styles */
+        .forgot-password {
+            text-align: right;
+            margin-top: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .forgot-link {
+            color: #2ecc71;
+            text-decoration: none;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .forgot-link:hover {
+            color: #27ae60;
+            text-decoration: underline;
+        }
+
+        .form-subtitle {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .reset-method-selection {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .method-option {
+            flex: 1;
+        }
+
+        .method-option input[type="radio"] {
+            display: none;
+        }
+
+        .method-label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .method-label i {
+            font-size: 1.5rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+            transition: color 0.3s ease;
+        }
+
+        .method-label span {
+            font-size: 0.9rem;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .method-option input[type="radio"]:checked + .method-label {
+            border-color: #2ecc71;
+            background: #f8fff9;
+        }
+
+        .method-option input[type="radio"]:checked + .method-label i {
+            color: #2ecc71;
+        }
+
+        .method-option input[type="radio"]:checked + .method-label span {
+            color: #2ecc71;
+        }
+
+        .otp-container {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .otp-input {
+            width: 45px;
+            height: 45px;
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: 600;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            background: white;
+            transition: border-color 0.3s ease;
+        }
+
+        .otp-input:focus {
+            outline: none;
+            border-color: #2ecc71;
+            box-shadow: 0 0 0 3px rgba(46, 204, 113, 0.1);
+        }
+
+        .divider {
+            color: #ccc;
+            margin: 0 0.5rem;
+        }
+
+        /* Method selection toggle */
+        .reset-method-selection input[name="resetMethod"]:checked ~ #mobileInputGroup {
+            display: block;
+        }
+
+        .reset-method-selection input[name="resetMethod"]:checked ~ #emailInputGroup {
+            display: none;
+        }
+
+        /* Animation for form transitions */
+        .form-container {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.3s ease;
+        }
+
+        .notification.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            background: #2ecc71;
+        }
+
+        .notification.error {
+            background: #e74c3c;
+        }
+
+        .admin-link {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(52, 73, 94, 0.9);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .admin-link:hover {
+            background: rgba(52, 73, 94, 1);
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .login-container {
+                margin: 1rem;
+                padding: 2rem;
+            }
+
+            .logo {
+                font-size: 2rem;
+            }
+
+            .features {
+                flex-direction: column;
+                gap: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Slideshow -->
+    <div class="bg-slideshow">
+        <div class="bg-slide active"></div>
+        <div class="bg-slide"></div>
+        <div class="bg-slide"></div>
+        <div class="bg-slide"></div>
+    </div>
+
+    <!-- Login Container -->
+    <div class="login-container">
+        <div class="logo-section">
+            <div class="logo">
+                <i class="fas fa-leaf"></i>
+                GreenObasket
+            </div>
+            <div class="tagline">Fresh From Farm to Your Table</div>
+            <div class="subtitle">Premium Organic Groceries Delivered Fresh</div>
+        </div>
+
+        <!-- Login Form -->
+        <div class="form-container" id="loginForm">
+            <h2 class="form-title">Welcome Back</h2>
+            <form onsubmit="loginUser(event)">
+                <div class="input-group">
+                    <i class="fas fa-mobile-alt"></i>
+                    <input type="tel" class="form-input" id="loginMobile" placeholder="Mobile Number" required maxlength="10">
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" class="form-input" id="loginPassword" placeholder="Password" required>
+                </div>
+                <div class="forgot-password">
+                    <a class="forgot-link" onclick="showForgotPasswordForm()">Forgot Password?</a>
+                </div>
+                <button type="submit" class="btn-primary">
+                    <i class="fas fa-sign-in-alt"></i> Login & Start Shopping
+                </button>
+            </form>
+            <div class="form-toggle">
+                <p>New to GreenObasket?</p>
+                <a class="toggle-link" onclick="showRegisterForm()">Create Account</a>
+            </div>
+        </div>
+
+        <!-- Register Form -->
+        <div class="form-container" id="registerForm" style="display: none;">
+            <h2 class="form-title">Join GreenObasket</h2>
+            <form onsubmit="registerUser(event)">
+                <div class="input-group">
+                    <i class="fas fa-user"></i>
+                    <input type="text" class="form-input" id="registerName" placeholder="Full Name" required>
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-mobile-alt"></i>
+                    <input type="tel" class="form-input" id="registerMobile" placeholder="Mobile Number" required maxlength="10">
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" class="form-input" id="registerEmail" placeholder="Email Address" required>
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" class="form-input" id="registerPassword" placeholder="Create Password" required minlength="6">
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <input type="text" class="form-input" id="registerAddress" placeholder="Delivery Address (Optional)">
+                </div>
+                <button type="submit" class="btn-primary">
+                    <i class="fas fa-user-plus"></i> Create Account & Start Shopping
+                </button>
+            </form>
+            <div class="form-toggle">
+                <p>Already have an account?</p>
+                <a class="toggle-link" onclick="showLoginForm()">Sign In</a>
+            </div>
+        </div>
+
+        <!-- Forgot Password Form - Step 1: Method Selection -->
+        <div class="form-container" id="forgotPasswordForm" style="display: none;">
+            <h2 class="form-title">Reset Your Password</h2>
+            <p class="form-subtitle">Choose how you'd like to receive your OTP</p>
+            <form onsubmit="sendResetOTP(event)">
+                <div class="reset-method-selection">
+                    <div class="method-option">
+                        <input type="radio" id="resetByMobile" name="resetMethod" value="mobile" checked>
+                        <label for="resetByMobile" class="method-label">
+                            <i class="fas fa-mobile-alt"></i>
+                            <span>Via SMS</span>
+                        </label>
+                    </div>
+                    <div class="method-option">
+                        <input type="radio" id="resetByEmail" name="resetMethod" value="email">
+                        <label for="resetByEmail" class="method-label">
+                            <i class="fas fa-envelope"></i>
+                            <span>Via Email</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="input-group" id="mobileInputGroup">
+                    <i class="fas fa-mobile-alt"></i>
+                    <input type="tel" class="form-input" id="resetMobile" placeholder="Enter Mobile Number" maxlength="10">
+                </div>
+                
+                <div class="input-group" id="emailInputGroup" style="display: none;">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" class="form-input" id="resetEmail" placeholder="Enter Email Address">
+                </div>
+                
+                <button type="submit" class="btn-primary">
+                    <i class="fas fa-paper-plane"></i> Send OTP
+                </button>
+            </form>
+            <div class="form-toggle">
+                <p>Remember your password?</p>
+                <a class="toggle-link" onclick="showLoginForm()">Back to Login</a>
+            </div>
+        </div>
+
+        <!-- Forgot Password Form - Step 2: OTP Verification -->
+        <div class="form-container" id="otpVerificationForm" style="display: none;">
+            <h2 class="form-title">Enter Verification Code</h2>
+            <p class="form-subtitle">We've sent a 6-digit code to <span id="otpSentTo"></span></p>
+            <form onsubmit="verifyResetOTP(event)">
+                <div class="otp-container">
+                    <input type="text" class="otp-input" id="otp1" maxlength="1" oninput="moveToNext(this, 'otp2')" onkeydown="moveToPrev(this, null, event)">
+                    <input type="text" class="otp-input" id="otp2" maxlength="1" oninput="moveToNext(this, 'otp3')" onkeydown="moveToPrev(this, 'otp1', event)">
+                    <input type="text" class="otp-input" id="otp3" maxlength="1" oninput="moveToNext(this, 'otp4')" onkeydown="moveToPrev(this, 'otp2', event)">
+                    <input type="text" class="otp-input" id="otp4" maxlength="1" oninput="moveToNext(this, 'otp5')" onkeydown="moveToPrev(this, 'otp3', event)">
+                    <input type="text" class="otp-input" id="otp5" maxlength="1" oninput="moveToNext(this, 'otp6')" onkeydown="moveToPrev(this, 'otp4', event)">
+                    <input type="text" class="otp-input" id="otp6" maxlength="1" oninput="moveToNext(this, null)" onkeydown="moveToPrev(this, 'otp5', event)">
+                </div>
+                <button type="submit" class="btn-primary">
+                    <i class="fas fa-check"></i> Verify OTP
+                </button>
+            </form>
+            <div class="form-toggle">
+                <p>Didn't receive the code?</p>
+                <a class="toggle-link" onclick="resendOTP()">Resend OTP</a>
+                <span class="divider">|</span>
+                <a class="toggle-link" onclick="showForgotPasswordForm()">Change Method</a>
+            </div>
+        </div>
+
+        <!-- Forgot Password Form - Step 3: Reset Password -->
+        <div class="form-container" id="resetPasswordForm" style="display: none;">
+            <h2 class="form-title">Create New Password</h2>
+            <p class="form-subtitle">Enter your new password below</p>
+            <form onsubmit="submitNewPassword(event)">
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" class="form-input" id="newPassword" placeholder="New Password" required minlength="6">
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" class="form-input" id="confirmPassword" placeholder="Confirm New Password" required minlength="6">
+                </div>
+                <button type="submit" class="btn-primary">
+                    <i class="fas fa-save"></i> Reset Password
+                </button>
+            </form>
+            <div class="form-toggle">
+                <p>Password updated successfully?</p>
+                <a class="toggle-link" onclick="showLoginForm()">Back to Login</a>
+            </div>
+        </div>
+
+        <!-- Features -->
+        <div class="features">
+            <div class="feature">
+                <i class="fas fa-leaf"></i>
+                <div class="feature-title">100% Organic</div>
+                <div class="feature-desc">Fresh from farms</div>
+            </div>
+            <div class="feature">
+                <i class="fas fa-truck"></i>
+                <div class="feature-title">Quick Delivery</div>
+                <div class="feature-desc">Within 45-60 mins</div>
+            </div>
+            <div class="feature">
+                <i class="fas fa-shield-alt"></i>
+                <div class="feature-title">Quality Assured</div>
+                <div class="feature-desc">Premium products</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Link -->
+    <a href="/admin" class="admin-link">
+        <i class="fas fa-cog"></i> Admin Panel
+    </a>
+
+    <!-- Notification -->
+    <div class="notification" id="notification"></div>
+
+    <script>
+        // Background slideshow
+        const slides = document.querySelectorAll('.bg-slide');
+        let currentSlide = 0;
+
+        function nextSlide() {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (currentSlide + 1) % slides.length;
+            slides[currentSlide].classList.add('active');
+        }
+
+        setInterval(nextSlide, 5000);
+
+        // Form functions
+        function showLoginForm() {
+            document.getElementById('loginForm').style.display = 'block';
+            document.getElementById('registerForm').style.display = 'none';
+            document.getElementById('forgotPasswordForm').style.display = 'none';
+            document.getElementById('otpVerificationForm').style.display = 'none';
+            document.getElementById('resetPasswordForm').style.display = 'none';
+        }
+
+        function showRegisterForm() {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('registerForm').style.display = 'block';
+            document.getElementById('forgotPasswordForm').style.display = 'none';
+            document.getElementById('otpVerificationForm').style.display = 'none';
+            document.getElementById('resetPasswordForm').style.display = 'none';
+        }
+
+        function showForgotPasswordForm() {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('registerForm').style.display = 'none';
+            document.getElementById('forgotPasswordForm').style.display = 'block';
+            document.getElementById('otpVerificationForm').style.display = 'none';
+            document.getElementById('resetPasswordForm').style.display = 'none';
+        }
+
+        function showOTPVerificationForm() {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('registerForm').style.display = 'none';
+            document.getElementById('forgotPasswordForm').style.display = 'none';
+            document.getElementById('otpVerificationForm').style.display = 'block';
+            document.getElementById('resetPasswordForm').style.display = 'none';
+        }
+
+        function showResetPasswordForm() {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('registerForm').style.display = 'none';
+            document.getElementById('forgotPasswordForm').style.display = 'none';
+            document.getElementById('otpVerificationForm').style.display = 'none';
+            document.getElementById('resetPasswordForm').style.display = 'block';
+        }
+
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type} show`;
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 4000);
+        }
+
+        // Login function
+        async function loginUser(event) {
+            event.preventDefault();
+            
+            const mobile = document.getElementById('loginMobile').value.trim();
+            const password = document.getElementById('loginPassword').value.trim();
+
+            if (!mobile || !password) {
+                showNotification('Please fill in all fields', 'error');
+                return;
+            }
+
+            if (mobile.length !== 10 || !/^\d+$/.test(mobile)) {
+                showNotification('Please enter a valid 10-digit mobile number', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/user/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        mobile: mobile,
+                        password: password
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    localStorage.setItem('userToken', data.session_token);
+                    localStorage.setItem('currentUser', JSON.stringify(data.user));
+                    showNotification(`Welcome back, ${data.user.name}! 🌱`);
+                    setTimeout(() => {
+                        window.location.href = '/shop';
+                    }, 1500);
+                } else {
+                    showNotification(data.error || 'Login failed', 'error');
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                showNotification('Network error. Please try again.', 'error');
+            }
+        }
+
+        // Register function
+        async function registerUser(event) {
+            event.preventDefault();
+            
+            const name = document.getElementById('registerName').value.trim();
+            const mobile = document.getElementById('registerMobile').value.trim();
+            const email = document.getElementById('registerEmail').value.trim();
+            const password = document.getElementById('registerPassword').value.trim();
+            const address = document.getElementById('registerAddress').value.trim();
+
+            if (!name || !mobile || !email || !password) {
+                showNotification('Please fill in all required fields', 'error');
+                return;
+            }
+
+            if (mobile.length !== 10 || !/^\d+$/.test(mobile)) {
+                showNotification('Please enter a valid 10-digit mobile number', 'error');
+                return;
+            }
+
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                showNotification('Please enter a valid email address', 'error');
+                return;
+            }
+
+            if (password.length < 6) {
+                showNotification('Password must be at least 6 characters long', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/user/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        name: name,
+                        mobile: mobile,
+                        email: email,
+                        password: password,
+                        address: address
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    localStorage.setItem('userToken', data.session_token);
+                    localStorage.setItem('currentUser', JSON.stringify(data.user));
+                    showNotification(`Welcome to GreenObasket, ${data.user.name}! 🌱`);
+                    setTimeout(() => {
+                        window.location.href = '/shop';
+                    }, 1500);
+                } else {
+                    showNotification(data.error || 'Registration failed', 'error');
+                }
+            } catch (error) {
+                console.error('Registration error:', error);
+                showNotification('Network error. Please try again.', 'error');
+            }
+        }
+
+        // Forgot Password functions
+        let currentResetData = { identifier: '', method: '', resetToken: '' };
+
+        // Method switching functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileRadio = document.getElementById('resetByMobile');
+            const emailRadio = document.getElementById('resetByEmail');
+            const mobileGroup = document.getElementById('mobileInputGroup');
+            const emailGroup = document.getElementById('emailInputGroup');
+
+            if (mobileRadio && emailRadio) {
+                mobileRadio.addEventListener('change', function() {
+                    if (this.checked) {
+                        mobileGroup.style.display = 'block';
+                        emailGroup.style.display = 'none';
+                        document.getElementById('resetMobile').required = true;
+                        document.getElementById('resetEmail').required = false;
+                    }
+                });
+
+                emailRadio.addEventListener('change', function() {
+                    if (this.checked) {
+                        mobileGroup.style.display = 'none';
+                        emailGroup.style.display = 'block';
+                        document.getElementById('resetMobile').required = false;
+                        document.getElementById('resetEmail').required = true;
+                    }
+                });
+            }
+        });
+
+        async function sendResetOTP(event) {
+            event.preventDefault();
+            const method = document.querySelector('input[name="resetMethod"]:checked').value;
+            const identifier = method === 'mobile' ? 
+                document.getElementById('resetMobile').value.trim() : 
+                document.getElementById('resetEmail').value.trim();
+
+            if (!identifier) {
+                showNotification(`Please enter your ${method === 'mobile' ? 'mobile number' : 'email address'}`, 'error');
+                return;
+            }
+
+            if (method === 'mobile' && (identifier.length !== 10 || !/^\d+$/.test(identifier))) {
+                showNotification('Please enter a valid 10-digit mobile number', 'error');
+                return;
+            }
+
+            if (method === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(identifier)) {
+                showNotification('Please enter a valid email address', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/user/forgot-password', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        identifier: identifier,
+                        method: method
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    currentResetData.identifier = identifier;
+                    currentResetData.method = method;
+                    document.getElementById('otpSentTo').textContent = identifier;
+                    showOTPVerificationForm();
+                    showNotification(data.message, 'success');
+                    
+                    // Clear OTP inputs
+                    for (let i = 1; i <= 6; i++) {
+                        document.getElementById(`otp${i}`).value = '';
+                    }
+                    document.getElementById('otp1').focus();
+                } else {
+                    showNotification(data.error || 'Failed to send OTP', 'error');
+                }
+            } catch (error) {
+                console.error('Forgot Password error:', error);
+                showNotification('Network error. Please try again.', 'error');
+            }
+        }
+
+        async function verifyResetOTP(event) {
+            event.preventDefault();
+            let otp = '';
+            for (let i = 1; i <= 6; i++) {
+                otp += document.getElementById(`otp${i}`).value;
+            }
+
+            if (otp.length !== 6) {
+                showNotification('Please enter the complete 6-digit OTP', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/user/verify-otp', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        identifier: currentResetData.identifier,
+                        otp: otp
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    currentResetData.resetToken = data.reset_token;
+                    showResetPasswordForm();
+                    showNotification(data.message, 'success');
+                    
+                    // Clear password fields
+                    document.getElementById('newPassword').value = '';
+                    document.getElementById('confirmPassword').value = '';
+                    document.getElementById('newPassword').focus();
+                } else {
+                    showNotification(data.error || 'OTP verification failed', 'error');
+                }
+            } catch (error) {
+                console.error('OTP Verification error:', error);
+                showNotification('Network error. Please try again.', 'error');
+            }
+        }
+
+        async function submitNewPassword(event) {
+            event.preventDefault();
+            const newPassword = document.getElementById('newPassword').value.trim();
+            const confirmPassword = document.getElementById('confirmPassword').value.trim();
+
+            if (!newPassword || !confirmPassword) {
+                showNotification('Please fill in all password fields', 'error');
+                return;
+            }
+
+            if (newPassword.length < 6) {
+                showNotification('Password must be at least 6 characters long', 'error');
+                return;
+            }
+
+            if (newPassword !== confirmPassword) {
+                showNotification('Passwords do not match', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/user/reset-password', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        reset_token: currentResetData.resetToken,
+                        new_password: newPassword
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    showNotification(data.message, 'success');
+                    
+                    // Clear reset data
+                    currentResetData = { identifier: '', method: '', resetToken: '' };
+                    
+                    setTimeout(() => {
+                        showLoginForm();
+                    }, 2000);
+                } else {
+                    showNotification(data.error || 'Password reset failed', 'error');
+                }
+            } catch (error) {
+                console.error('Password Reset error:', error);
+                showNotification('Network error. Please try again.', 'error');
+            }
+        }
+
+        function moveToNext(input, nextInputId) {
+            if (input.value.length === 1 && nextInputId) {
+                document.getElementById(nextInputId).focus();
+            }
+        }
+
+        function moveToPrev(input, prevInputId, event) {
+            if (event.key === 'Backspace' && !input.value && prevInputId) {
+                document.getElementById(prevInputId).focus();
+            }
+        }
+
+        async function resendOTP() {
+            if (!currentResetData.identifier || !currentResetData.method) {
+                showNotification('Please start the reset process again', 'error');
+                showForgotPasswordForm();
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/user/forgot-password', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        identifier: currentResetData.identifier,
+                        method: currentResetData.method
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    showNotification('OTP resent successfully!', 'success');
+                    
+                    // Clear OTP inputs and focus first one
+                    for (let i = 1; i <= 6; i++) {
+                        document.getElementById(`otp${i}`).value = '';
+                    }
+                    document.getElementById('otp1').focus();
+                } else {
+                    showNotification(data.error || 'Failed to resend OTP', 'error');
+                }
+            } catch (error) {
+                console.error('Resend OTP error:', error);
+                showNotification('Network error. Please try again.', 'error');
+            }
+        }
+
+        // Auto-focus on mobile input
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('loginMobile').focus();
+        });
+
+        // Only allow numbers in mobile input
+        document.getElementById('loginMobile').addEventListener('input', function(e) {
+            this.value = this.value.replace(/[^0-9]/g, '');
+        });
+
+        document.getElementById('registerMobile').addEventListener('input', function(e) {
+            this.value = this.value.replace(/[^0-9]/g, '');
+        });
+
+        document.getElementById('resetMobile').addEventListener('input', function(e) {
+            this.value = this.value.replace(/[^0-9]/g, '');
+        });
+    </script>
+</body>
+</html> 

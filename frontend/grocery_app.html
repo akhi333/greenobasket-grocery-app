@@ -1,0 +1,3487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GreenObasket - Premium Online Grocery Store</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+            color: white;
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo i {
+            color: #f1c40f;
+        }
+
+        .search-container {
+            flex: 1;
+            max-width: 500px;
+            margin: 0 2rem;
+            position: relative;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1rem;
+            outline: none;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .search-btn {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #2ecc71;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .admin-btn {
+            background: rgba(255,255,255,0.2);
+            border: 2px solid white;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .admin-btn:hover {
+            background: white;
+            color: #2ecc71;
+        }
+
+        /* User Authentication Styles */
+        .user-auth {
+            position: relative;
+        }
+
+        .login-btn, .logout-btn {
+            background: rgba(255,255,255,0.2);
+            border: 2px solid white;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .login-btn:hover, .logout-btn:hover {
+            background: white;
+            color: #2ecc71;
+        }
+
+        /* Inline User Info Styles */
+        .user-info-inline {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-name-inline {
+            color: white;
+            font-weight: bold;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255,255,255,0.1);
+            padding: 8px 12px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .user-name-inline:hover {
+            background: rgba(255,255,255,0.2);
+            border-color: rgba(255,255,255,0.5);
+            transform: translateY(-2px);
+        }
+
+        .user-name-inline i {
+            font-size: 1.1rem;
+        }
+
+        .logout-btn-inline {
+            background: #e74c3c;
+            border: 2px solid #e74c3c;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .logout-btn-inline:hover {
+            background: #c0392b;
+            border-color: #c0392b;
+            transform: translateY(-2px);
+        }
+
+        /* User Orders Styles */
+        .loading-spinner {
+            text-align: center;
+            padding: 40px;
+            color: #2ecc71;
+            font-size: 1.1rem;
+        }
+
+        .loading-spinner i {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .order-item {
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            background: white;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .order-item:hover {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+        }
+
+        .order-header {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .order-id {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .order-date {
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+
+        .order-body {
+            padding: 20px;
+        }
+
+        .order-items {
+            margin-bottom: 15px;
+        }
+
+        .order-product {
+            display: flex;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #f5f5f5;
+        }
+
+        .order-product:last-child {
+            border-bottom: none;
+        }
+
+        .order-product-info {
+            flex: 1;
+            margin-left: 10px;
+        }
+
+        .order-product-name {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .order-product-details {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 2px;
+        }
+
+        .order-totals {
+            border-top: 2px solid #eee;
+            padding-top: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .order-total-amount {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #2ecc71;
+        }
+
+        .order-status {
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .order-status.confirmed {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .order-payment-method {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        /* Order Status Tracking Styles */
+        .order-status-badge {
+            padding: 8px 15px;
+            border-radius: 20px;
+            color: white;
+            font-size: 0.9rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .order-status-tracking {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #2ecc71;
+        }
+
+        .status-timeline {
+            margin-top: 15px;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .status-item:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            left: 20px;
+            top: 40px;
+            width: 2px;
+            height: 30px;
+            background: #ddd;
+        }
+
+        .status-item.current::after {
+            background: #2ecc71;
+        }
+
+        .status-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.1rem;
+            margin-right: 15px;
+            z-index: 1;
+            position: relative;
+        }
+
+        .status-details {
+            flex: 1;
+            padding-top: 2px;
+        }
+
+        .status-label {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .status-message {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 3px;
+        }
+
+        .status-time {
+            color: #999;
+            font-size: 0.8rem;
+        }
+
+        .cart-btn {
+            background: rgba(255,255,255,0.2);
+            border: 2px solid white;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .cart-btn:hover {
+            background: white;
+            color: #2ecc71;
+        }
+
+        .cart-count {
+            background: #e74c3c;
+            color: white;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        /* Categories */
+        .categories {
+            background: white;
+            padding: 1rem 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .categories-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .categories-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .categories h2 {
+            color: #2ecc71;
+            margin: 0;
+            font-size: 1.3rem;
+        }
+
+        .category-scroll {
+            padding: 0.5rem 0;
+        }
+
+        #categoriesContainer {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .category-item {
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+            color: white;
+            padding: 0.7rem 1rem;
+            border-radius: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            font-weight: 600;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            flex: 0 0 auto;
+        }
+
+        .category-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(46,204,113,0.3);
+        }
+
+        .category-item.active {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 3px 10px rgba(231,76,60,0.3);
+        }
+
+        .category-item i {
+            font-size: 1.2rem;
+        }
+
+        .all-products-btn {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            padding: 0.7rem 1.2rem;
+            border-radius: 20px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.85rem;
+        }
+
+        .all-products-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52,152,219,0.3);
+        }
+
+        .all-products-btn.active {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 3px 10px rgba(231,76,60,0.3);
+        }
+
+        /* Responsive Categories */
+        @media (max-width: 768px) {
+            .categories-content {
+                padding: 0 1rem;
+            }
+            
+            .categories-header {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+            
+            #categoriesContainer {
+                gap: 0.6rem;
+            }
+            
+            .category-item {
+                padding: 0.6rem 0.8rem;
+                font-size: 0.8rem;
+            }
+            
+            .all-products-btn {
+                padding: 0.6rem 1rem;
+                font-size: 0.8rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .category-item {
+                padding: 0.5rem 0.7rem;
+                font-size: 0.75rem;
+                gap: 0.3rem;
+            }
+            
+            .category-item i {
+                font-size: 1rem;
+            }
+        }
+
+        /* Main Content Layout */
+        .main-content {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 2rem;
+        }
+
+        /* Live Cart Sidebar */
+        .live-cart {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 120px;
+            height: fit-content;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .live-cart h3 {
+            color: #2ecc71;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .live-cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .live-cart-item:last-child {
+            border-bottom: none;
+        }
+
+        .live-cart-item-info {
+            flex: 1;
+        }
+
+        .live-cart-item-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .live-cart-item-price {
+            color: #2ecc71;
+            font-size: 0.8rem;
+        }
+
+        .live-cart-quantity {
+            background: #f8f9fa;
+            padding: 0.3rem 0.6rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .live-cart-total {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 2px solid #eee;
+        }
+
+        .live-cart-subtotal,
+        .live-cart-delivery,
+        .live-cart-final {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .live-cart-final {
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: #2ecc71;
+            border-top: 1px solid #eee;
+            padding-top: 0.5rem;
+        }
+
+        .live-cart-checkout-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: white;
+            border: none;
+            padding: 15px 20px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
+        }
+
+        .live-cart-checkout-btn:hover {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(46, 204, 113, 0.4);
+        }
+
+        .live-cart-checkout-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 10px rgba(46, 204, 113, 0.3);
+        }
+
+        .live-cart-checkout-btn i {
+            font-size: 1.1rem;
+        }
+
+        /* Checkout form animations */
+        #paymentSection {
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .address-confirmed {
+            background: #e8f5e8 !important;
+            border-left: 4px solid #2ecc71 !important;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .delivery-free {
+            color: #2ecc71;
+            font-weight: 600;
+        }
+
+        .delivery-charge {
+            color: #e67e22;
+        }
+
+        .coupon-info {
+            background: #e8f5e8;
+            padding: 0.8rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            font-size: 0.8rem;
+            color: #27ae60;
+        }
+
+        .empty-cart {
+            text-align: center;
+            color: #666;
+            padding: 2rem 1rem;
+        }
+
+        .empty-cart i {
+            font-size: 3rem;
+            color: #ddd;
+            margin-bottom: 1rem;
+        }
+
+        /* Products */
+        .products-section {
+            min-height: 600px;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            color: #2ecc71;
+            font-weight: 700;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .loading-products, .error-message {
+            text-align: center;
+            padding: 3rem;
+            font-size: 1.2rem;
+            color: #666;
+            grid-column: 1 / -1;
+        }
+
+        .loading-products {
+            color: #2ecc71;
+        }
+
+        .error-message {
+            color: #e74c3c;
+            background: #fdf2f2;
+            border: 1px solid #f5c6cb;
+            border-radius: 10px;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+            border-color: #2ecc71;
+        }
+
+        .product-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+        }
+
+        .product-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        .product-description {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .product-price {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #2ecc71;
+            margin-bottom: 1rem;
+        }
+
+        .product-stock {
+            font-size: 0.8rem;
+            color: #7f8c8d;
+            margin-bottom: 1rem;
+        }
+
+        .quantity-cart-section {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+            margin-top: 1rem;
+        }
+
+        .quantity-selector {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .quantity-input-group {
+            display: flex;
+            align-items: center;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            overflow: hidden;
+            flex: 1;
+        }
+
+        .quantity-btn {
+            background: #f8f9fa;
+            border: none;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #2ecc71;
+            transition: background 0.3s ease;
+        }
+
+        .quantity-btn:hover {
+            background: #e9ecef;
+        }
+
+        .quantity-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .quantity-input {
+            border: none;
+            padding: 8px 12px;
+            width: 80px;
+            text-align: center;
+            font-size: 1rem;
+            font-weight: 600;
+            background: white;
+        }
+
+        .quantity-input:focus {
+            outline: none;
+        }
+
+        .unit-label {
+            background: #f8f9fa;
+            padding: 8px 10px;
+            font-size: 0.9rem;
+            color: #666;
+            font-weight: 600;
+            border-left: 1px solid #e1e8ed;
+        }
+
+        .quantity-display {
+            font-size: 0.8rem;
+            color: #666;
+            text-align: center;
+        }
+
+        .price-per-gram, .price-per-unit {
+            font-size: 0.8rem;
+            color: #2ecc71;
+            font-weight: 600;
+        }
+
+        .add-to-cart {
+            flex: 1;
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+            color: white;
+            border: none;
+            padding: 12px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .add-to-cart:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(46,204,113,0.4);
+        }
+
+        .add-to-cart:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Cart Modal */
+        .cart-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 2000;
+        }
+
+        .cart-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .cart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #eee;
+        }
+
+        .cart-header h2 {
+            color: #2ecc71;
+        }
+
+        .close-cart {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .cart-item-info {
+            flex: 1;
+        }
+
+        .cart-item-name {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .cart-item-price {
+            color: #2ecc71;
+            font-weight: bold;
+        }
+
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .quantity-btn {
+            background: #2ecc71;
+            color: white;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .cart-total {
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 2px solid #eee;
+        }
+
+        .total-amount {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 1rem;
+        }
+
+        .checkout-btn {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 600;
+            width: 100%;
+        }
+
+        .checkout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(243,156,18,0.4);
+        }
+
+        /* Checkout Form Styles */
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #2ecc71;
+        }
+
+        .checkout-summary {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1.5rem 0;
+        }
+
+        .checkout-summary h3 {
+            color: #2ecc71;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .total-row {
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: #2ecc71;
+            border-top: 1px solid #ddd;
+            padding-top: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .payment-section {
+            margin: 1.5rem 0;
+        }
+
+        .payment-section h3 {
+            color: #2ecc71;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .payment-options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .payment-option {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            padding: 1rem;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .payment-option:hover {
+            border-color: #2ecc71;
+            background: #f8fff8;
+        }
+
+        .payment-option input[type="radio"] {
+            margin-right: 1rem;
+            width: auto;
+        }
+
+        .payment-label {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            font-weight: 600;
+        }
+
+        .payment-label i {
+            color: #2ecc71;
+        }
+
+        .payment-option input[type="radio"]:checked + .payment-label {
+            color: #2ecc71;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .search-container {
+                margin: 0;
+                max-width: none;
+            }
+
+            .header-actions {
+                justify-content: center;
+            }
+
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .live-cart {
+                position: static;
+                order: 2;
+            }
+
+            .products-section {
+                order: 1;
+            }
+
+            .category-scroll {
+                padding-bottom: 1rem;
+            }
+
+            .products-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .empty-cart {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+
+        .notification {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            background: #2ecc71;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            z-index: 3000;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            background: #2ecc71;
+        }
+
+        .notification.error {
+            background: #e74c3c;
+        }
+
+        .notification.info {
+            background: #3498db;
+        }
+
+        /* Footer */
+        .footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 2rem 0;
+            margin-top: 3rem;
+        }
+
+        .footer h3 {
+            color: #2ecc71;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-leaf"></i>
+                GreenObasket
+            </div>
+            <div class="search-container">
+                <input type="text" class="search-box" placeholder="Search for fresh products, organic items and more..." id="searchInput">
+                <button class="search-btn"><i class="fas fa-search"></i></button>
+            </div>
+            <div class="header-actions">
+                <button class="cart-btn" onclick="openCart()">
+                    <i class="fas fa-shopping-cart"></i>
+                    Cart
+                    <span class="cart-count" id="cartCount">0</span>
+                </button>
+                <div class="user-auth" id="userAuth">
+                    <button class="login-btn" onclick="showUserAuth()" id="loginBtn">
+                        <i class="fas fa-user"></i>
+                        Login
+                    </button>
+                </div>
+                <!-- User info displayed inline when logged in -->
+                <div class="user-info-inline" id="userInfoInline" style="display: none;">
+                    <span class="user-name-inline" id="userNameInline" onclick="showUserOrders()" title="View your previous orders">
+                        <i class="fas fa-user-circle"></i>
+                        <span id="userNameText"></span>
+                    </span>
+                    <button class="logout-btn-inline" onclick="logoutUser()">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Categories -->
+    <section class="categories">
+        <div class="categories-content">
+            <div class="categories-header">
+                <h2>Shop by Category</h2>
+                <button class="all-products-btn" onclick="filterCategory('all')">
+                    <i class="fas fa-th-large"></i>
+                    All Products
+                </button>
+            </div>
+            <div class="category-scroll">
+                <div id="categoriesContainer">
+                    <!-- Categories will be loaded dynamically -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Live Cart Sidebar -->
+        <div class="live-cart">
+            <h3>
+                <i class="fas fa-shopping-basket"></i>
+                Your Cart (<span id="liveCartCount">0</span>)
+            </h3>
+            <div id="liveCartItems">
+                <div class="empty-cart">
+                    <i class="fas fa-shopping-cart"></i>
+                    <p>Your cart is empty</p>
+                    <p>Add some fresh products!</p>
+                </div>
+            </div>
+            <div class="live-cart-total" id="liveCartTotal" style="display: none;">
+                <div class="live-cart-subtotal">
+                    <span>Subtotal:</span>
+                    <span>₹<span id="subtotalAmount">0</span></span>
+                </div>
+                <div class="live-cart-delivery">
+                    <span>Delivery:</span>
+                    <span id="deliveryFee" class="delivery-free">FREE</span>
+                </div>
+                <div class="live-cart-final">
+                    <span>Total:</span>
+                    <span>₹<span id="finalAmount">0</span></span>
+                </div>
+                <div class="coupon-info" id="couponInfo">
+                    🎉 Free delivery on orders above ₹200!
+                </div>
+                <button class="live-cart-checkout-btn" id="liveCartCheckoutBtn" onclick="showCheckoutForm()" style="display: none;">
+                    <i class="fas fa-credit-card"></i>
+                    Proceed to Checkout
+                </button>
+            </div>
+        </div>
+
+        <!-- Products Section -->
+        <div class="products-section">
+            <h2 class="section-title">Fresh & Organic Products</h2>
+            <div class="products-grid" id="productsGrid">
+                <!-- Products will be dynamically loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Cart Modal -->
+    <div class="cart-modal" id="cartModal">
+        <div class="cart-content">
+            <div class="cart-header">
+                <h2>Your GreenBasket</h2>
+                <button class="close-cart" onclick="closeCart()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div id="cartItems">
+                <!-- Cart items will be dynamically loaded here -->
+            </div>
+            <div class="cart-total">
+                <div class="total-amount">Total: ₹<span id="totalAmount">0</span></div>
+                <button class="checkout-btn" onclick="showCheckoutForm()">Proceed to Checkout</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Authentication Modal -->
+    <div class="cart-modal" id="userAuthModal">
+        <div class="cart-content" style="max-width: 400px;">
+            <div class="cart-header">
+                <h2 id="authModalTitle">Login to GreenObasket</h2>
+                <button class="close-cart" onclick="closeUserAuth()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <!-- Login Form -->
+            <div id="loginForm">
+                <form onsubmit="loginUser(event)">
+                    <div class="form-group">
+                        <label for="loginMobile">Mobile Number *</label>
+                        <input type="tel" id="loginMobile" required maxlength="10" placeholder="Enter 10-digit mobile number">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="loginPassword">Password *</label>
+                        <input type="password" id="loginPassword" required placeholder="Enter your password">
+                    </div>
+                    
+                    <button type="submit" class="checkout-btn" style="width: 100%;">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Login
+                    </button>
+                </form>
+                
+                <div style="text-align: center; margin-top: 15px;">
+                    <p>Don't have an account? 
+                        <a href="#" onclick="showRegisterForm()" style="color: #2ecc71; text-decoration: none;">Register here</a>
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Registration Form -->
+            <div id="registerForm" style="display: none;">
+                <form onsubmit="registerUser(event)">
+                    <div class="form-group">
+                        <label for="registerName">Full Name *</label>
+                        <input type="text" id="registerName" required placeholder="Enter your full name">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="registerMobile">Mobile Number *</label>
+                        <input type="tel" id="registerMobile" required maxlength="10" placeholder="Enter 10-digit mobile number">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="registerPassword">Password *</label>
+                        <input type="password" id="registerPassword" required minlength="6" placeholder="Minimum 6 characters">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="registerAddress">Address</label>
+                        <textarea id="registerAddress" rows="3" placeholder="Enter your complete address (optional)"></textarea>
+                    </div>
+                    
+                    <button type="submit" class="checkout-btn" style="width: 100%;">
+                        <i class="fas fa-user-plus"></i>
+                        Register
+                    </button>
+                </form>
+                
+                <div style="text-align: center; margin-top: 15px;">
+                    <p>Already have an account? 
+                        <a href="#" onclick="showLoginForm()" style="color: #2ecc71; text-decoration: none;">Login here</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Checkout Modal -->
+    <div class="cart-modal" id="checkoutModal">
+        <div class="cart-content" style="max-width: 500px;">
+            <div class="cart-header">
+                <h2>Order Details</h2>
+                <button class="close-cart" onclick="closeCheckoutForm()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <form id="checkoutForm">
+                <div class="form-group">
+                    <label for="customerName">Full Name *</label>
+                    <input type="text" id="customerName" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="customerMobile">Mobile Number *</label>
+                    <input type="tel" id="customerMobile" pattern="[0-9]{10}" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="addressType">Address Type *</label>
+                    <select id="addressType" required>
+                        <option value="">Select Address Type</option>
+                        <option value="apartment">Apartment/Flat</option>
+                        <option value="villa">Villa/Individual House</option>
+                        <option value="office">Office</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="blockFlat">Block/Flat/Villa Number *</label>
+                    <input type="text" id="blockFlat" placeholder="e.g., Block A, Flat 201 or Villa 15" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="fullAddress">Complete Address *</label>
+                    <textarea id="fullAddress" rows="3" placeholder="Street, Area, Landmark, City, Pincode" required></textarea>
+                </div>
+                
+                <div class="checkout-summary">
+                    <h3>Order Summary</h3>
+                    <div class="summary-row">
+                        <span>Subtotal:</span>
+                        <span>₹<span id="checkoutSubtotal">0</span></span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Delivery Fee:</span>
+                        <span id="checkoutDelivery" class="delivery-free">FREE</span>
+                    </div>
+                    <div class="summary-row total-row">
+                        <span>Total Amount:</span>
+                        <span>₹<span id="checkoutTotal">0</span></span>
+                    </div>
+                </div>
+                
+                <div class="payment-section">
+                    <h3>Payment Method</h3>
+                    <div class="payment-options">
+                        <label class="payment-option">
+                            <input type="radio" name="payment" value="phonepe" checked>
+                            <span class="payment-label">
+                                <i class="fas fa-mobile-alt"></i>
+                                UPI Payment (PhonePe/Google Pay/Paytm)
+                                <small style="display: block; font-size: 0.8em; color: #666; margin-top: 3px;">
+                                    Secure instant payment via UPI
+                                </small>
+                            </span>
+                        </label>
+                        <label class="payment-option">
+                            <input type="radio" name="payment" value="cod">
+                            <span class="payment-label">
+                                <i class="fas fa-money-bill-wave"></i>
+                                Cash on Delivery
+                                <small style="display: block; font-size: 0.8em; color: #666; margin-top: 3px;">
+                                    Pay when your order arrives
+                                </small>
+                            </span>
+                        </label>
+                        <label class="payment-option">
+                            <input type="radio" name="payment" value="app">
+                            <span class="payment-label">
+                                <i class="fas fa-credit-card"></i>
+                                Pay in App Later
+                                <small style="display: block; font-size: 0.8em; color: #666; margin-top: 3px;">
+                                    Complete payment after order confirmation
+                                </small>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+                
+                <button type="submit" class="checkout-btn" style="width: 100%; margin-top: 1rem;">
+                    <i class="fas fa-check"></i>
+                    Place Order
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div>
+            <h3>GreenObasket</h3>
+            <p>Your trusted partner for fresh, organic groceries delivered to your doorstep</p>
+            <p>&copy; 2024 GreenObasket. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Notification -->
+    <div class="notification" id="notification">
+        Item added to cart!
+    </div>
+
+    <!-- User Orders Modal -->
+    <div class="cart-modal" id="ordersModal">
+        <div class="cart-content" style="max-width: 800px; max-height: 80vh; overflow-y: auto;">
+            <div class="cart-header">
+                <h2><i class="fas fa-history"></i> Your Previous Orders</h2>
+                <button class="close-cart" onclick="closeUserOrders()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div id="ordersContainer">
+                <div class="loading-spinner" id="ordersLoading">
+                    <i class="fas fa-spinner fa-spin"></i> Loading your orders...
+                </div>
+                <div id="ordersList" style="display: none;"></div>
+                <div id="noOrdersMessage" style="display: none;">
+                    <div style="text-align: center; padding: 40px; color: #666;">
+                        <i class="fas fa-shopping-bag" style="font-size: 3rem; margin-bottom: 20px; opacity: 0.5;"></i>
+                        <h3>No Orders Yet</h3>
+                        <p>You haven't placed any orders yet. Start shopping to see your order history here!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // User authentication management
+        let userToken = localStorage.getItem('userToken');
+        let currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+
+        let cart = [];
+        let currentCategory = 'all';
+        let allProducts = [];
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', function() {
+            // Redirect to login if not authenticated
+            if (!userToken) {
+                window.location.href = '/';
+                return;
+            }
+            
+            checkUserAuth();
+            loadProducts();
+            loadCategories();
+            updateCartCount();
+            
+            // Set "All Products" as active by default after categories load
+            setTimeout(() => {
+                const allProductsBtn = document.querySelector('.all-products-btn');
+                if (allProductsBtn) {
+                    allProductsBtn.classList.add('active');
+                }
+            }, 500);
+            
+            // Auto-refresh every 10 seconds to check for hidden items
+            setInterval(async () => {
+                await updateCartCount();
+            }, 10000);
+            
+            // Also refresh when page becomes visible again (user switches back to tab)
+            document.addEventListener('visibilitychange', function() {
+                if (!document.hidden) {
+                    updateCartCount();
+                    loadProducts();
+                }
+            });
+            
+            // Search functionality
+            document.getElementById('searchInput').addEventListener('input', function(e) {
+                searchProducts(e.target.value);
+            });
+        });
+
+        // Check user authentication status
+        function checkUserAuth() {
+            if (userToken && currentUser) {
+                showUserMenu();
+            } else {
+                showLoginButton();
+            }
+        }
+
+        // Show login button
+        function showLoginButton() {
+            document.getElementById('loginBtn').style.display = 'flex';
+            document.getElementById('userInfoInline').style.display = 'none';
+        }
+
+        // Show user menu (now inline)
+        function showUserMenu() {
+            document.getElementById('loginBtn').style.display = 'none';
+            document.getElementById('userInfoInline').style.display = 'flex';
+            document.getElementById('userNameText').textContent = currentUser ? currentUser.name : 'User';
+        }
+
+        // Show user authentication modal
+        function showUserAuth() {
+            document.getElementById('userAuthModal').style.display = 'block';
+            showLoginForm();
+        }
+
+        // Close user authentication modal
+        function closeUserAuth() {
+            document.getElementById('userAuthModal').style.display = 'none';
+        }
+
+        // Show login form
+        function showLoginForm() {
+            document.getElementById('authModalTitle').textContent = 'Login to GreenObasket';
+            document.getElementById('loginForm').style.display = 'block';
+            document.getElementById('registerForm').style.display = 'none';
+        }
+
+        // Show registration form
+        function showRegisterForm() {
+            document.getElementById('authModalTitle').textContent = 'Register with GreenObasket';
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('registerForm').style.display = 'block';
+        }
+
+        // Login user
+        async function loginUser(event) {
+            event.preventDefault();
+            
+            const mobile = document.getElementById('loginMobile').value.trim();
+            const password = document.getElementById('loginPassword').value.trim();
+            
+            if (!mobile || !password) {
+                alert('Please fill in all fields');
+                return;
+            }
+            
+            if (mobile.length !== 10 || !/^\d{10}$/.test(mobile)) {
+                alert('Please enter a valid 10-digit mobile number');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/user/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ mobile, password })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    userToken = data.session_token;
+                    currentUser = data.user;
+                    
+                    localStorage.setItem('userToken', userToken);
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    
+                    showUserMenu();
+                    closeUserAuth();
+                    updateCartCount(); // Refresh cart for this user
+                    
+                    alert('Login successful! Welcome back, ' + currentUser.name);
+                } else {
+                    alert('Login failed: ' + data.error);
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                alert('Login failed. Please try again.');
+            }
+        }
+
+        // Register user
+        async function registerUser(event) {
+            event.preventDefault();
+            
+            const name = document.getElementById('registerName').value.trim();
+            const mobile = document.getElementById('registerMobile').value.trim();
+            const password = document.getElementById('registerPassword').value.trim();
+            const address = document.getElementById('registerAddress').value.trim();
+            
+            if (!name || !mobile || !password) {
+                alert('Please fill in all required fields');
+                return;
+            }
+            
+            if (mobile.length !== 10 || !/^\d{10}$/.test(mobile)) {
+                alert('Please enter a valid 10-digit mobile number');
+                return;
+            }
+            
+            if (password.length < 6) {
+                alert('Password must be at least 6 characters long');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/user/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ name, mobile, password, address })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    userToken = data.session_token;
+                    currentUser = data.user;
+                    
+                    localStorage.setItem('userToken', userToken);
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    
+                    showUserMenu();
+                    closeUserAuth();
+                    updateCartCount(); // Refresh cart for this user
+                    
+                    alert('Registration successful! Welcome to GreenObasket, ' + currentUser.name);
+                } else {
+                    alert('Registration failed: ' + data.error);
+                }
+            } catch (error) {
+                console.error('Registration error:', error);
+                alert('Registration failed. Please try again.');
+            }
+        }
+
+        // Logout user
+        async function logoutUser() {
+            try {
+                if (userToken) {
+                    await fetch('/api/user/logout', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ session_token: userToken })
+                    });
+                }
+            } catch (error) {
+                console.error('Logout error:', error);
+            }
+            
+            // Clear local storage
+            localStorage.removeItem('userToken');
+            localStorage.removeItem('currentUser');
+            
+            userToken = null;
+            currentUser = null;
+            cart = [];
+            
+            showLoginButton();
+            updateCartCount();
+            
+            // Redirect to login page
+            window.location.href = '/';
+        }
+
+        // Show user orders modal
+        async function showUserOrders() {
+            document.getElementById('ordersModal').style.display = 'block';
+            document.getElementById('ordersLoading').style.display = 'block';
+            document.getElementById('ordersList').style.display = 'none';
+            document.getElementById('noOrdersMessage').style.display = 'none';
+            
+            await loadUserOrders();
+        }
+
+        // Close user orders modal
+        function closeUserOrders() {
+            document.getElementById('ordersModal').style.display = 'none';
+        }
+
+        // Load user's previous orders
+        async function loadUserOrders() {
+            try {
+                const response = await fetch('/api/user/orders', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${userToken}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+                
+                document.getElementById('ordersLoading').style.display = 'none';
+
+                if (data.success && (data.current_orders.length > 0 || data.previous_orders.length > 0)) {
+                    displayUserOrders(data.current_orders, data.previous_orders);
+                } else {
+                    document.getElementById('noOrdersMessage').style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Error loading orders:', error);
+                document.getElementById('ordersLoading').style.display = 'none';
+                document.getElementById('noOrdersMessage').style.display = 'block';
+            }
+        }
+
+        // Display user orders in the modal
+        function displayUserOrders(currentOrders, previousOrders) {
+            const ordersList = document.getElementById('ordersList');
+            ordersList.innerHTML = '';
+
+            // Add current orders section
+            if (currentOrders && currentOrders.length > 0) {
+                const currentSection = document.createElement('div');
+                currentSection.innerHTML = `
+                    <div style="background: linear-gradient(135deg, #2ecc71, #27ae60); color: white; padding: 15px 20px; margin-bottom: 20px; border-radius: 10px;">
+                        <h3 style="margin: 0; display: flex; align-items: center; gap: 10px;">
+                            <i class="fas fa-clock"></i> Current Orders (${currentOrders.length})
+                        </h3>
+                    </div>
+                `;
+                ordersList.appendChild(currentSection);
+
+                currentOrders.forEach(order => {
+                    ordersList.appendChild(createOrderElement(order, true));
+                });
+            }
+
+            // Add previous orders section
+            if (previousOrders && previousOrders.length > 0) {
+                const previousSection = document.createElement('div');
+                previousSection.innerHTML = `
+                    <div style="background: linear-gradient(135deg, #95a5a6, #7f8c8d); color: white; padding: 15px 20px; margin: 30px 0 20px 0; border-radius: 10px;">
+                        <h3 style="margin: 0; display: flex; align-items: center; gap: 10px;">
+                            <i class="fas fa-history"></i> Previous Orders (${previousOrders.length})
+                        </h3>
+                    </div>
+                `;
+                ordersList.appendChild(previousSection);
+
+                previousOrders.forEach(order => {
+                    ordersList.appendChild(createOrderElement(order, false));
+                });
+            }
+
+            ordersList.style.display = 'block';
+        }
+
+                // Create order element with status tracking
+        function createOrderElement(order, isCurrent) {
+            const orderDate = new Date(order.created_at).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+
+            const orderElement = document.createElement('div');
+            orderElement.className = 'order-item';
+            
+            let itemsHtml = '';
+            order.items.forEach(item => {
+                itemsHtml += `
+                    <div class="order-product">
+                        <div class="order-product-info">
+                            <div class="order-product-name">${item.name}</div>
+                            <div class="order-product-details">
+                                Quantity: ${item.quantity} ${item.weight ? `(${item.weight}g each)` : ''}
+                                • ₹${item.price} each
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            const paymentMethodDisplay = order.payment_method === 'cod' ? 'Cash on Delivery' :
+                                       order.payment_method === 'upi' ? 'UPI Payment' :
+                                       order.payment_method === 'pay_later' ? 'Pay in App Later' :
+                                       order.payment_method;
+
+            // Status display and icons
+            const statusConfig = {
+                'order_received': { icon: 'fas fa-receipt', label: 'Order Received', color: '#3498db' },
+                'confirmed': { icon: 'fas fa-check-circle', label: 'Confirmed', color: '#2ecc71' },
+                'packed': { icon: 'fas fa-box', label: 'Packed', color: '#f39c12' },
+                'out_for_delivery': { icon: 'fas fa-truck', label: 'Out for Delivery', color: '#e67e22' },
+                'delivered': { icon: 'fas fa-check-double', label: 'Delivered', color: '#27ae60' },
+                'cancelled': { icon: 'fas fa-times-circle', label: 'Cancelled', color: '#e74c3c' }
+            };
+
+            const currentStatus = statusConfig[order.status] || { icon: 'fas fa-info', label: order.status, color: '#95a5a6' };
+
+            // Status history for current orders
+            let statusHistoryHtml = '';
+            if (isCurrent && order.status_history) {
+                statusHistoryHtml = `
+                    <div class="order-status-tracking">
+                        <h4 style="margin: 10px 0; color: #2c3e50;"><i class="fas fa-route"></i> Order Tracking</h4>
+                        <div class="status-timeline">
+                `;
+                
+                order.status_history.forEach((status, index) => {
+                    const statusInfo = statusConfig[status.status] || { icon: 'fas fa-info', label: status.status, color: '#95a5a6' };
+                    const timeAgo = new Date(status.timestamp).toLocaleString();
+                    
+                    statusHistoryHtml += `
+                        <div class="status-item ${index === order.status_history.length - 1 ? 'current' : ''}">
+                            <div class="status-icon" style="background: ${statusInfo.color};">
+                                <i class="${statusInfo.icon}"></i>
+                            </div>
+                            <div class="status-details">
+                                <div class="status-label">${statusInfo.label}</div>
+                                <div class="status-message">${status.message}</div>
+                                <div class="status-time">${timeAgo}</div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                statusHistoryHtml += `
+                        </div>
+                    </div>
+                `;
+            }
+
+            orderElement.innerHTML = `
+                <div class="order-header">
+                    <div>
+                        <div class="order-id">Order #${order.id.substr(-8)}</div>
+                        <div class="order-date">${orderDate}</div>
+                    </div>
+                    <div class="order-status-badge" style="background: ${currentStatus.color};">
+                        <i class="${currentStatus.icon}"></i>
+                        ${currentStatus.label}
+                    </div>
+                </div>
+                <div class="order-body">
+                    <div class="order-items">
+                        ${itemsHtml}
+                    </div>
+                    ${statusHistoryHtml}
+                    <div class="order-totals">
+                        <div>
+                            <div class="order-total-amount">₹${order.total}</div>
+                            <div class="order-payment-method">
+                                <i class="fas fa-credit-card"></i> ${paymentMethodDisplay}
+                            </div>
+                        </div>
+                        <div style="text-align: right; font-size: 0.85rem; color: #666;">
+                            <div><strong>Items:</strong> ${order.items.length} products</div>
+                            <div><strong>Delivery:</strong> ${order.estimated_delivery_text || 'Standard'}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            return orderElement;
+        }
+
+        // Load products from API
+        async function loadProducts() {
+            try {
+                const response = await fetch('/api/products');
+                const data = await response.json();
+                if (data.success) {
+                    allProducts = data.products;
+                    renderProducts(allProducts);
+                }
+            } catch (error) {
+                console.error('Error loading products:', error);
+                showNotification('Error loading products', 'error');
+            }
+        }
+
+        // Load categories from API
+        async function loadCategories() {
+            try {
+                const response = await fetch('/api/categories');
+                const data = await response.json();
+                if (data.success) {
+                    renderCategories(data.categories);
+                }
+            } catch (error) {
+                console.error('Error loading categories:', error);
+                // Fallback categories if API fails
+                const fallbackCategories = [
+                    {id: "fruits", name: "Fresh Fruits", icon: "fas fa-apple-alt"},
+                    {id: "vegetables", name: "Organic Vegetables", icon: "fas fa-carrot"},
+                    {id: "dairy", name: "Dairy & Fresh", icon: "fas fa-cheese"},
+                    {id: "beverages", name: "Beverages", icon: "fas fa-coffee"},
+                    {id: "snacks", name: "Healthy Snacks", icon: "fas fa-cookie-bite"}
+                ];
+                renderCategories(fallbackCategories);
+            }
+        }
+
+        // Render categories
+        function renderCategories(categories) {
+            const container = document.getElementById('categoriesContainer');
+            container.innerHTML = '';
+            
+            categories.forEach(category => {
+                const categoryBtn = document.createElement('button');
+                categoryBtn.className = 'category-item';
+                categoryBtn.setAttribute('data-category', category.id);
+                categoryBtn.onclick = () => filterCategory(category.id);
+                categoryBtn.innerHTML = `
+                    <i class="${category.icon}"></i>
+                    ${category.name}
+                `;
+                container.appendChild(categoryBtn);
+            });
+        }
+
+        // Calculate delivery fee and totals
+        function calculateTotals() {
+            const subtotal = cart.reduce((sum, item) => {
+                if (item.quantity_grams) {
+                    // Gram-based item
+                    return sum + item.total_price;
+                } else {
+                    // Regular quantity-based item
+                    return sum + (item.price * item.quantity);
+                }
+            }, 0);
+            
+            const deliveryThreshold = 200;
+            const deliveryRate = 0.10; // 10%
+            
+            let deliveryFee = 0;
+            let deliveryText = 'FREE';
+            let deliveryClass = 'delivery-free';
+            
+            if (subtotal > 0 && subtotal < deliveryThreshold) {
+                deliveryFee = Math.round(subtotal * deliveryRate);
+                deliveryText = `₹${deliveryFee}`;
+                deliveryClass = 'delivery-charge';
+            }
+            
+            const total = subtotal + deliveryFee;
+            
+            return {
+                subtotal: Math.round(subtotal),
+                deliveryFee,
+                deliveryText,
+                deliveryClass,
+                total: Math.round(total),
+                isFreeDelivery: subtotal >= deliveryThreshold || subtotal === 0
+            };
+        }
+
+        // Update live cart sidebar
+        function updateLiveCart() {
+            const liveCartItems = document.getElementById('liveCartItems');
+            const liveCartTotal = document.getElementById('liveCartTotal');
+            const liveCartCount = document.getElementById('liveCartCount');
+            const couponInfo = document.getElementById('couponInfo');
+            
+            liveCartCount.textContent = cart.reduce((sum, item) => {
+                if (item.quantity_grams) {
+                    return sum + 1; // Count gram-based items as 1 unit
+                } else {
+                    return sum + item.quantity; // Count regular items by quantity
+                }
+            }, 0);
+            
+            if (cart.length === 0) {
+                liveCartItems.innerHTML = `
+                    <div class="empty-cart">
+                        <i class="fas fa-shopping-cart"></i>
+                        <p>Your cart is empty</p>
+                        <p>Add some fresh products!</p>
+                    </div>
+                `;
+                liveCartTotal.style.display = 'none';
+                document.getElementById('liveCartCheckoutBtn').style.display = 'none';
+                return;
+            }
+            
+            // Render cart items
+            liveCartItems.innerHTML = cart.map(item => {
+                if (item.quantity_grams) {
+                    // Gram-based item
+                    return `
+                        <div class="live-cart-item">
+                            <div class="live-cart-item-info">
+                                <div class="live-cart-item-name">${item.name}</div>
+                                <div class="live-cart-item-price">₹${item.total_price.toFixed(2)} for ${item.quantity_grams}g</div>
+                            </div>
+                            <div class="live-cart-quantity">${item.quantity_grams}g</div>
+                        </div>
+                    `;
+                } else {
+                    // Regular quantity-based item
+                    return `
+                        <div class="live-cart-item">
+                            <div class="live-cart-item-info">
+                                <div class="live-cart-item-name">${item.name}</div>
+                                <div class="live-cart-item-price">₹${item.price} each</div>
+                            </div>
+                            <div class="live-cart-quantity">×${item.quantity}</div>
+                        </div>
+                    `;
+                }
+            }).join('');
+            
+            // Calculate and display totals
+            const totals = calculateTotals();
+            
+            document.getElementById('subtotalAmount').textContent = totals.subtotal;
+            document.getElementById('deliveryFee').textContent = totals.deliveryText;
+            document.getElementById('deliveryFee').className = totals.deliveryClass;
+            document.getElementById('finalAmount').textContent = totals.total;
+            
+            // Update coupon info
+            if (totals.subtotal > 0 && totals.subtotal < 200) {
+                const remaining = 200 - totals.subtotal;
+                couponInfo.innerHTML = `🚚 Add ₹${remaining} more for FREE delivery!`;
+                couponInfo.style.background = '#fff3cd';
+                couponInfo.style.color = '#856404';
+            } else if (totals.isFreeDelivery && totals.subtotal > 0) {
+                couponInfo.innerHTML = `🎉 Congratulations! You've got FREE delivery!`;
+                couponInfo.style.background = '#e8f5e8';
+                couponInfo.style.color = '#27ae60';
+            }
+            
+            liveCartTotal.style.display = 'block';
+            document.getElementById('liveCartCheckoutBtn').style.display = 'block';
+        }
+
+        // Render products
+        function renderProducts(productsToRender = allProducts) {
+            const productsGrid = document.getElementById('productsGrid');
+            productsGrid.innerHTML = '';
+
+            productsToRender.forEach(product => {
+                const productCard = document.createElement('div');
+                productCard.className = 'product-card';
+                const isOutOfStock = product.stock <= 0;
+                
+                // Get quantity type and limits
+                const quantityType = product.quantity_type || 'grams';
+                const minQuantity = product.min_quantity || (quantityType === 'pieces' ? 1 : 250);
+                const maxQuantity = product.max_quantity || (quantityType === 'pieces' ? 20 : 5000);
+                
+                // Calculate pricing based on quantity type
+                let priceDisplay = '';
+                let quantitySelector = '';
+                let totalDisplay = '';
+                let addToCartFunction = '';
+
+                if (quantityType === 'grams') {
+                    const baseWeight = parseWeightToGrams(product.weight || '100g');
+                    const pricePerGram = product.price / baseWeight;
+                    const step = quantityType === 'grams' ? 250 : 1;
+                    
+                    priceDisplay = `
+                        <div class="product-price">₹${product.price} <span style="font-size: 0.8em; color: #666;">for ${product.weight}</span></div>
+                        <div class="price-per-unit">₹${(pricePerGram * 1000).toFixed(2)} per KG</div>
+                    `;
+                    
+                    quantitySelector = `
+                        <div class="quantity-input-group">
+                            <button class="quantity-btn" onclick="updateGramQuantity(${product.id}, -${step})" ${isOutOfStock ? 'disabled' : ''}>-</button>
+                            <input type="number" class="quantity-input" id="qty-${product.id}" value="${minQuantity}" min="${minQuantity}" max="${maxQuantity}" step="${step}" ${isOutOfStock ? 'disabled' : ''} onchange="validateGramQuantity(${product.id})">
+                            <button class="quantity-btn" onclick="updateGramQuantity(${product.id}, ${step})" ${isOutOfStock ? 'disabled' : ''}>+</button>
+                            <div class="unit-label">KG</div>
+                        </div>
+                    `;
+                    
+                    totalDisplay = `Total: ₹<span id="total-${product.id}">${(pricePerGram * minQuantity).toFixed(2)}</span>`;
+                    addToCartFunction = `addToCartWithGrams(${product.id})`;
+                    
+                } else if (quantityType === 'pieces') {
+                    priceDisplay = `
+                        <div class="product-price">₹${product.price} <span style="font-size: 0.8em; color: #666;">per number</span></div>
+                        <div class="price-per-unit">₹${product.price} per number</div>
+                    `;
+                    
+                    quantitySelector = `
+                        <div class="quantity-input-group">
+                            <button class="quantity-btn" onclick="updatePieceQuantity(${product.id}, -1)" ${isOutOfStock ? 'disabled' : ''}>-</button>
+                            <input type="number" class="quantity-input" id="qty-${product.id}" value="${minQuantity}" min="${minQuantity}" max="${maxQuantity}" step="1" ${isOutOfStock ? 'disabled' : ''} onchange="validatePieceQuantity(${product.id})">
+                            <button class="quantity-btn" onclick="updatePieceQuantity(${product.id}, 1)" ${isOutOfStock ? 'disabled' : ''}>+</button>
+                            <div class="unit-label">numbers</div>
+                        </div>
+                    `;
+                    
+                    totalDisplay = `Total: ₹<span id="total-${product.id}">${(product.price * minQuantity).toFixed(2)}</span>`;
+                    addToCartFunction = `addToCartWithPieces(${product.id})`;
+                    
+                } else { // liters or other
+                    priceDisplay = `
+                        <div class="product-price">₹${product.price} <span style="font-size: 0.8em; color: #666;">per ${quantityType}</span></div>
+                        <div class="price-per-unit">₹${product.price} per ${quantityType}</div>
+                    `;
+                    
+                    quantitySelector = `
+                        <div class="quantity-input-group">
+                            <button class="quantity-btn" onclick="updateLiterQuantity(${product.id}, -1)" ${isOutOfStock ? 'disabled' : ''}>-</button>
+                            <input type="number" class="quantity-input" id="qty-${product.id}" value="${minQuantity}" min="${minQuantity}" max="${maxQuantity}" step="1" ${isOutOfStock ? 'disabled' : ''} onchange="validateLiterQuantity(${product.id})">
+                            <button class="quantity-btn" onclick="updateLiterQuantity(${product.id}, 1)" ${isOutOfStock ? 'disabled' : ''}>+</button>
+                            <div class="unit-label">${quantityType}</div>
+                        </div>
+                    `;
+                    
+                    totalDisplay = `Total: ₹<span id="total-${product.id}">${(product.price * minQuantity).toFixed(2)}</span>`;
+                    addToCartFunction = `addToCartWithLiters(${product.id})`;
+                }
+                
+                productCard.innerHTML = `
+                    <img src="${product.image}" alt="${product.name}" class="product-image">
+                    <div class="product-name">${product.name}</div>
+                    <div class="product-description">${product.description}</div>
+                    ${priceDisplay}
+                    <div class="product-stock">${isOutOfStock ? 'Out of Stock' : `${product.stock} items available`}</div>
+                    <div class="quantity-cart-section">
+                        <div class="quantity-selector">
+                            ${quantitySelector}
+                        </div>
+                        <div class="quantity-display">
+                            ${totalDisplay}
+                        </div>
+                        <button class="add-to-cart" onclick="${addToCartFunction}" ${isOutOfStock ? 'disabled' : ''}>
+                            <i class="fas fa-cart-plus"></i>
+                            ${isOutOfStock ? 'Out of Stock' : 'Add to Cart'}
+                        </button>
+                    </div>
+                `;
+                productsGrid.appendChild(productCard);
+            });
+        }
+
+        // Filter products by category
+        async function filterCategory(category) {
+            currentCategory = category;
+            
+            // Update active states
+            document.querySelectorAll('.category-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            document.querySelector('.all-products-btn').classList.remove('active');
+            
+            try {
+                // Show loading state
+                const productsGrid = document.getElementById('productsGrid');
+                productsGrid.innerHTML = '<div class="loading-products">Loading products...</div>';
+                
+                // Make API call with category filter
+                const url = category === 'all' 
+                    ? '/api/products' 
+                    : `/api/products?category=${category}`;
+                
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Update active button
+                    if (category === 'all') {
+                        document.querySelector('.all-products-btn').classList.add('active');
+                    } else {
+                        const activeButton = document.querySelector(`[data-category="${category}"]`);
+                        if (activeButton) {
+                            activeButton.classList.add('active');
+                        }
+                    }
+                    
+                    // Render filtered products
+                    renderProducts(data.products);
+                    
+                    // Update allProducts cache if showing all products
+                    if (category === 'all') {
+                        allProducts = data.products;
+                    }
+                } else {
+                    console.error('Error loading products:', data.error);
+                    productsGrid.innerHTML = '<div class="error-message">Error loading products. Please try again.</div>';
+                }
+            } catch (error) {
+                console.error('Error filtering products:', error);
+                const productsGrid = document.getElementById('productsGrid');
+                productsGrid.innerHTML = '<div class="error-message">Error loading products. Please try again.</div>';
+            }
+        }
+
+        // Search products
+        function searchProducts(query) {
+            if (!query.trim()) {
+                filterCategory(currentCategory);
+                return;
+            }
+
+            const filteredProducts = allProducts.filter(product => 
+                product.name.toLowerCase().includes(query.toLowerCase()) ||
+                product.description.toLowerCase().includes(query.toLowerCase()) ||
+                product.category.toLowerCase().includes(query.toLowerCase())
+            );
+            renderProducts(filteredProducts);
+        }
+
+        // Parse weight string to grams
+        function parseWeightToGrams(weightStr) {
+            let baseWeight = 100; // Default
+            try {
+                if (weightStr.toLowerCase().includes('kg')) {
+                    baseWeight = parseFloat(weightStr.toLowerCase().replace('kg', '').replace(' ', '')) * 1000;
+                } else if (weightStr.toLowerCase().includes('g')) {
+                    baseWeight = parseFloat(weightStr.toLowerCase().replace('g', '').replace(' ', ''));
+                } else {
+                    baseWeight = parseFloat(weightStr.replace(' ', ''));
+                    if (baseWeight < 100) { // Assume it's in kg if less than 100
+                        baseWeight *= 1000;
+                    }
+                }
+            } catch (e) {
+                baseWeight = 100; // Fallback
+            }
+            return baseWeight;
+        }
+
+        // Update gram quantity input
+        function updateGramQuantity(productId, change) {
+            const input = document.getElementById(`qty-${productId}`);
+            const currentValue = parseInt(input.value) || 250;
+            const newValue = currentValue + change;
+            
+            // Get product to check max stock
+            const product = allProducts.find(p => p.id === String(productId));
+            if (!product) return;
+            
+            const baseWeight = parseWeightToGrams(product.weight || '100g');
+            const minQuantity = 250;
+            const maxQuantity = Math.min(10000, product.stock * baseWeight);
+            
+            if (newValue >= minQuantity && newValue <= maxQuantity) {
+                input.value = newValue;
+                updatePriceDisplay(productId, newValue, product);
+            }
+        }
+
+        // Validate gram quantity input
+        function validateGramQuantity(productId) {
+            const input = document.getElementById(`qty-${productId}`);
+            const value = parseInt(input.value) || 250;
+            
+            const product = allProducts.find(p => p.id === String(productId));
+            if (!product) return;
+            
+            const baseWeight = parseWeightToGrams(product.weight || '100g');
+            const minQuantity = 250;
+            const maxQuantity = Math.min(10000, product.stock * baseWeight);
+            
+            let correctedValue = value;
+            if (value < minQuantity) correctedValue = minQuantity;
+            if (value > maxQuantity) correctedValue = maxQuantity;
+            
+            // Round to nearest 250g
+            correctedValue = Math.round(correctedValue / 250) * 250;
+            
+            input.value = correctedValue;
+            updatePriceDisplay(productId, correctedValue, product);
+        }
+
+        // Update price display
+        function updatePriceDisplay(productId, grams, product) {
+            const baseWeight = parseWeightToGrams(product.weight || '100g');
+            const pricePerGram = product.price / baseWeight;
+            const totalPrice = (pricePerGram * grams).toFixed(2);
+            
+            const totalElement = document.getElementById(`total-${productId}`);
+            if (totalElement) {
+                totalElement.textContent = totalPrice;
+            }
+        }
+
+        // Update piece quantity input
+        function updatePieceQuantity(productId, change) {
+            const input = document.getElementById(`qty-${productId}`);
+            const currentValue = parseInt(input.value) || 1;
+            const newValue = currentValue + change;
+            
+            const product = allProducts.find(p => p.id === String(productId));
+            if (!product) return;
+            
+            const minQuantity = product.min_quantity || 1;
+            const maxQuantity = Math.min(product.max_quantity || 20, product.stock);
+            
+            if (newValue >= minQuantity && newValue <= maxQuantity) {
+                input.value = newValue;
+                updatePiecesPriceDisplay(productId, newValue, product);
+            }
+        }
+
+        // Validate piece quantity input
+        function validatePieceQuantity(productId) {
+            const input = document.getElementById(`qty-${productId}`);
+            const value = parseInt(input.value) || 1;
+            
+            const product = allProducts.find(p => p.id === String(productId));
+            if (!product) return;
+            
+            const minQuantity = product.min_quantity || 1;
+            const maxQuantity = Math.min(product.max_quantity || 20, product.stock);
+            
+            let correctedValue = value;
+            if (value < minQuantity) correctedValue = minQuantity;
+            if (value > maxQuantity) correctedValue = maxQuantity;
+            
+            input.value = correctedValue;
+            updatePiecesPriceDisplay(productId, correctedValue, product);
+        }
+
+        // Update price display for pieces
+        function updatePiecesPriceDisplay(productId, pieces, product) {
+            const totalPrice = (product.price * pieces).toFixed(2);
+            
+            const totalElement = document.getElementById(`total-${productId}`);
+            if (totalElement) {
+                totalElement.textContent = totalPrice;
+            }
+        }
+
+        // Update liter quantity input
+        function updateLiterQuantity(productId, change) {
+            const input = document.getElementById(`qty-${productId}`);
+            const currentValue = parseInt(input.value) || 1;
+            const newValue = currentValue + change;
+            
+            const product = allProducts.find(p => p.id === String(productId));
+            if (!product) return;
+            
+            const minQuantity = product.min_quantity || 1;
+            const maxQuantity = Math.min(product.max_quantity || 10, product.stock);
+            
+            if (newValue >= minQuantity && newValue <= maxQuantity) {
+                input.value = newValue;
+                updateLitersPriceDisplay(productId, newValue, product);
+            }
+        }
+
+        // Validate liter quantity input
+        function validateLiterQuantity(productId) {
+            const input = document.getElementById(`qty-${productId}`);
+            const value = parseInt(input.value) || 1;
+            
+            const product = allProducts.find(p => p.id === String(productId));
+            if (!product) return;
+            
+            const minQuantity = product.min_quantity || 1;
+            const maxQuantity = Math.min(product.max_quantity || 10, product.stock);
+            
+            let correctedValue = value;
+            if (value < minQuantity) correctedValue = minQuantity;
+            if (value > maxQuantity) correctedValue = maxQuantity;
+            
+            input.value = correctedValue;
+            updateLitersPriceDisplay(productId, correctedValue, product);
+        }
+
+        // Update price display for liters
+        function updateLitersPriceDisplay(productId, liters, product) {
+            const totalPrice = (product.price * liters).toFixed(2);
+            
+            const totalElement = document.getElementById(`total-${productId}`);
+            if (totalElement) {
+                totalElement.textContent = totalPrice;
+            }
+        }
+
+        // Legacy function for compatibility
+        function updateQuantity(productId, change) {
+            updateGramQuantity(productId, change * 250);
+        }
+
+        // Add to cart with grams
+        async function addToCartWithGrams(productId) {
+            if (!userToken) {
+                showNotification('Please login to add items to cart', 'error');
+                showUserAuth();
+                return;
+            }
+            
+            const quantityInput = document.getElementById(`qty-${productId}`);
+            const grams = parseInt(quantityInput.value) || 250;
+            
+            const product = allProducts.find(p => p.id === String(productId));
+            if (!product) return;
+            
+            const baseWeight = parseWeightToGrams(product.weight || '100g');
+            const pricePerGram = product.price / baseWeight;
+            const totalPrice = pricePerGram * grams;
+            
+            try {
+                const response = await fetch('/api/cart/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${userToken}`
+                    },
+                    body: JSON.stringify({
+                        product_id: String(productId),
+                        quantity_grams: grams,
+                        total_price: totalPrice
+                    })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    showNotification(`${(grams/1000).toFixed(2)}KG added to cart! 🛒`, 'success');
+                    await updateCartCount();
+                    
+                    // Reset quantity to 250g after adding
+                    quantityInput.value = 250;
+                    updatePriceDisplay(productId, 250, product);
+                } else if (data.error === 'Authentication required') {
+                    logoutUser();
+                    showNotification('Please login again to continue', 'error');
+                } else {
+                    showNotification(data.error || 'Error adding item to cart', 'error');
+                }
+            } catch (error) {
+                console.error('Error adding item to cart:', error);
+                showNotification('Error adding item to cart', 'error');
+            }
+        }
+
+        // Add to cart with pieces
+        async function addToCartWithPieces(productId) {
+            if (!userToken) {
+                showNotification('Please login to add items to cart', 'error');
+                showUserAuth();
+                return;
+            }
+            
+            const quantityInput = document.getElementById(`qty-${productId}`);
+            const pieces = parseInt(quantityInput.value) || 1;
+            
+            const product = allProducts.find(p => p.id === String(productId));
+            if (!product) return;
+            
+            const totalPrice = product.price * pieces;
+            
+            try {
+                const response = await fetch('/api/cart/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${userToken}`
+                    },
+                    body: JSON.stringify({
+                        product_id: String(productId),
+                        quantity: pieces,
+                        quantity_type: 'pieces',
+                        total_price: totalPrice
+                    })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    showNotification(`${pieces} item${pieces > 1 ? 's' : ''} added to cart! 🛒`, 'success');
+                    await updateCartCount();
+                    
+                    // Reset quantity to minimum after adding
+                    const minQuantity = product.min_quantity || 1;
+                    quantityInput.value = minQuantity;
+                    updatePiecesPriceDisplay(productId, minQuantity, product);
+                } else if (data.error === 'Authentication required') {
+                    logoutUser();
+                    showNotification('Please login again to continue', 'error');
+                } else {
+                    showNotification(data.error || 'Error adding item to cart', 'error');
+                }
+            } catch (error) {
+                console.error('Error adding item to cart:', error);
+                showNotification('Error adding item to cart', 'error');
+            }
+        }
+
+        // Add to cart with liters
+        async function addToCartWithLiters(productId) {
+            if (!userToken) {
+                showNotification('Please login to add items to cart', 'error');
+                showUserAuth();
+                return;
+            }
+            
+            const quantityInput = document.getElementById(`qty-${productId}`);
+            const liters = parseInt(quantityInput.value) || 1;
+            
+            const product = allProducts.find(p => p.id === String(productId));
+            if (!product) return;
+            
+            const totalPrice = product.price * liters;
+            
+            try {
+                const response = await fetch('/api/cart/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${userToken}`
+                    },
+                    body: JSON.stringify({
+                        product_id: String(productId),
+                        quantity: liters,
+                        quantity_type: 'liters',
+                        total_price: totalPrice
+                    })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    showNotification(`${liters} liter${liters > 1 ? 's' : ''} added to cart! 🛒`, 'success');
+                    await updateCartCount();
+                    
+                    // Reset quantity to minimum after adding
+                    const minQuantity = product.min_quantity || 1;
+                    quantityInput.value = minQuantity;
+                    updateLitersPriceDisplay(productId, minQuantity, product);
+                } else if (data.error === 'Authentication required') {
+                    logoutUser();
+                    showNotification('Please login again to continue', 'error');
+                } else {
+                    showNotification(data.error || 'Error adding item to cart', 'error');
+                }
+            } catch (error) {
+                console.error('Error adding item to cart:', error);
+                showNotification('Error adding item to cart', 'error');
+            }
+        }
+
+        // Add to cart with custom quantity (legacy)
+        async function addToCartWithQuantity(productId) {
+            if (!userToken) {
+                showNotification('Please login to add items to cart', 'error');
+                showUserAuth();
+                return;
+            }
+            
+            const quantityInput = document.getElementById(`qty-${productId}`);
+            const quantity = parseInt(quantityInput.value) || 1;
+            
+            try {
+                const response = await fetch('/api/cart/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${userToken}`
+                    },
+                    body: JSON.stringify({
+                        product_id: productId,
+                        quantity: quantity
+                    })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    showNotification(`${quantity} item(s) added to cart! 🛒`, 'success');
+                    await updateCartCount();
+                    
+                    // Reset quantity to 1 after adding
+                    quantityInput.value = 1;
+                } else if (data.error === 'Authentication required') {
+                    logoutUser();
+                    showNotification('Please login again to continue', 'error');
+                } else {
+                    showNotification(data.error || 'Error adding item to cart', 'error');
+                }
+            } catch (error) {
+                console.error('Error adding item to cart:', error);
+                showNotification('Error adding item to cart', 'error');
+            }
+        }
+
+        // Add product to cart (legacy function for compatibility)
+        async function addToCart(productId) {
+            if (!userToken) {
+                showNotification('Please login to add items to cart', 'error');
+                showUserAuth();
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/cart/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${userToken}`
+                    },
+                    body: JSON.stringify({
+                        product_id: productId,
+                        quantity: 1
+                    })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    updateCartCount();
+                    showNotification('Item added to cart!');
+                } else if (data.error === 'Authentication required') {
+                    logoutUser();
+                    showNotification('Please login again to continue', 'error');
+                } else {
+                    showNotification(data.error || 'Error adding item to cart', 'error');
+                }
+            } catch (error) {
+                console.error('Error adding to cart:', error);
+                showNotification('Error adding item to cart', 'error');
+            }
+        }
+
+        // Check and remove hidden items from cart
+        async function removeHiddenItemsFromCart() {
+            if (!userToken) {
+                return false;
+            }
+            
+            try {
+                const response = await fetch('/api/products');
+                const data = await response.json();
+                if (data.success) {
+                    const visibleProductIds = data.products.map(p => p.id);
+                    let cartChanged = false;
+                    
+                    // Check if any cart items are now hidden
+                    const hiddenItems = cart.filter(item => !visibleProductIds.includes(item.id));
+                    
+                    if (hiddenItems.length > 0) {
+                        // Remove hidden items from server cart
+                        for (const hiddenItem of hiddenItems) {
+                            await fetch('/api/cart/remove', {
+                                method: 'DELETE',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'Authorization': `Bearer ${userToken}`
+                                },
+                                body: JSON.stringify({ product_id: hiddenItem.id })
+                            });
+                        }
+                        
+                        cartChanged = true;
+                        showNotification(`${hiddenItems.length} item(s) removed from cart (no longer available)`, 'info');
+                    }
+                    
+                    return cartChanged;
+                }
+            } catch (error) {
+                console.error('Error checking hidden items:', error);
+                return false;
+            }
+        }
+
+        // Update cart count and live cart
+        async function updateCartCount() {
+            if (!userToken) {
+                // User not logged in, show empty cart
+                cart = [];
+                document.getElementById('cartCount').textContent = '0';
+                updateLiveCart();
+                return;
+            }
+            
+            try {
+                // First check and remove any hidden items
+                const cartChanged = await removeHiddenItemsFromCart();
+                
+                const response = await fetch('/api/cart', {
+                    headers: {
+                        'Authorization': `Bearer ${userToken}`
+                    }
+                });
+                const data = await response.json();
+                if (data.success) {
+                    cart = data.cart;
+                    document.getElementById('cartCount').textContent = data.items_count;
+                    updateLiveCart(); // Update live cart sidebar
+                    
+                    // If cart changed due to hidden items, refresh products
+                    if (cartChanged) {
+                        loadProducts();
+                    }
+                } else if (data.error === 'Authentication required') {
+                    // Token might be expired, logout user
+                    logoutUser();
+                }
+            } catch (error) {
+                console.error('Error updating cart count:', error);
+            }
+        }
+
+        // Open cart modal
+        function openCart() {
+            document.getElementById('cartModal').style.display = 'block';
+            renderCartItems();
+        }
+
+        // Close cart modal
+        function closeCart() {
+            document.getElementById('cartModal').style.display = 'none';
+        }
+
+        // Render cart items
+        function renderCartItems() {
+            const cartItemsContainer = document.getElementById('cartItems');
+            
+            if (cart.length === 0) {
+                cartItemsContainer.innerHTML = `
+                    <div class="empty-cart">
+                        <i class="fas fa-shopping-cart" style="font-size: 3rem; color: #ccc; margin-bottom: 1rem;"></i>
+                        <p>Your GreenBasket is empty</p>
+                        <p>Add some fresh products to get started!</p>
+                    </div>
+                `;
+                document.getElementById('totalAmount').textContent = '0';
+                return;
+            }
+
+            cartItemsContainer.innerHTML = '';
+            let total = 0;
+
+            cart.forEach(item => {
+                const cartItem = document.createElement('div');
+                cartItem.className = 'cart-item';
+                cartItem.innerHTML = `
+                    <div class="cart-item-info">
+                        <div class="cart-item-name">${item.name}</div>
+                        <div class="cart-item-price">₹${item.price} each</div>
+                    </div>
+                    <div class="quantity-controls">
+                        <button class="quantity-btn" onclick="updateQuantity(${item.id}, ${item.quantity - 1})">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                        <span>${item.quantity}</span>
+                        <button class="quantity-btn" onclick="updateQuantity(${item.id}, ${item.quantity + 1})">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                        <button class="quantity-btn" onclick="removeFromCart(${item.id})" style="background: #e74c3c; margin-left: 10px;">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+                cartItemsContainer.appendChild(cartItem);
+                total += item.price * item.quantity;
+            });
+
+            document.getElementById('totalAmount').textContent = total;
+        }
+
+        // Update quantity
+        async function updateQuantity(productId, newQuantity) {
+            if (!userToken) {
+                showNotification('Please login to update cart', 'error');
+                return;
+            }
+            
+            if (newQuantity <= 0) {
+                await removeFromCart(productId);
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/cart/update', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${userToken}`
+                    },
+                    body: JSON.stringify({
+                        product_id: productId,
+                        quantity: newQuantity
+                    })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    await updateCartCount();
+                    renderCartItems();
+                } else if (data.error === 'Authentication required') {
+                    logoutUser();
+                    showNotification('Please login again to continue', 'error');
+                } else {
+                    showNotification(data.error || 'Error updating cart', 'error');
+                }
+            } catch (error) {
+                console.error('Error updating quantity:', error);
+                showNotification('Error updating cart', 'error');
+            }
+        }
+
+        // Remove from cart
+        async function removeFromCart(productId) {
+            if (!userToken) {
+                showNotification('Please login to remove items from cart', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/cart/remove', {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${userToken}`
+                    },
+                    body: JSON.stringify({
+                        product_id: productId
+                    })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    await updateCartCount();
+                    renderCartItems();
+                    showNotification('Item removed from cart');
+                } else if (data.error === 'Authentication required') {
+                    logoutUser();
+                    showNotification('Please login again to continue', 'error');
+                } else {
+                    showNotification(data.error || 'Error removing item', 'error');
+                }
+            } catch (error) {
+                console.error('Error removing from cart:', error);
+                showNotification('Error removing item', 'error');
+            }
+        }
+
+        // Show checkout form
+        async function showCheckoutForm() {
+            if (cart.length === 0) {
+                showNotification('Your cart is empty!', 'error');
+                return;
+            }
+            
+            try {
+                // Show checkout modal first
+                document.getElementById('checkoutModal').style.display = 'block';
+                closeCart(); // Close the cart modal
+                
+                // Update checkout summary - with null checks
+                const totals = calculateTotals();
+                const subtotalEl = document.getElementById('checkoutSubtotal');
+                const deliveryEl = document.getElementById('checkoutDelivery');
+                const totalEl = document.getElementById('checkoutTotal');
+                
+                if (subtotalEl) subtotalEl.textContent = totals.subtotal;
+                if (deliveryEl) {
+                    deliveryEl.textContent = totals.deliveryText;
+                    deliveryEl.className = totals.deliveryClass;
+                }
+                if (totalEl) totalEl.textContent = totals.total;
+                
+                // Then check for saved customer info and populate the form
+                await loadSavedCustomerInfo();
+                
+            } catch (error) {
+                console.error('Error opening checkout:', error);
+                showNotification('Error opening checkout. Please try again.', 'error');
+            }
+        }
+
+        // Load saved customer information
+        async function loadSavedCustomerInfo() {
+            if (!userToken) {
+                showRegularCheckoutForm();
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/customer-info', {
+                    headers: {
+                        'Authorization': `Bearer ${userToken}`
+                    }
+                });
+                const data = await response.json();
+                
+                if (data.success && data.customer_info) {
+                    const customerInfo = data.customer_info;
+                    // Show confirmation mode with saved info
+                    showSavedAddressConfirmation(customerInfo);
+                } else if (data.error === 'Authentication required') {
+                    logoutUser();
+                    showNotification('Please login again to continue', 'error');
+                } else {
+                    // No saved info, show regular form
+                    showRegularCheckoutForm();
+                }
+            } catch (error) {
+                console.error('Error loading customer info:', error);
+                showRegularCheckoutForm();
+            }
+        }
+
+        // Store saved customer info globally for later use
+        let savedCustomerInfo = null;
+
+        // Show saved address confirmation
+        function showSavedAddressConfirmation(customerInfo) {
+            // Store the customer info for later use
+            savedCustomerInfo = customerInfo;
+            
+            const checkoutForm = document.getElementById('checkoutForm');
+            
+            checkoutForm.innerHTML = `
+                <div style="margin-bottom: 20px;">
+                    <h3 style="color: #2ecc71; margin-bottom: 15px;">✅ Saved Address Found</h3>
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                        <p><strong>Name:</strong> ${customerInfo.name}</p>
+                        <p><strong>Mobile:</strong> ${customerInfo.mobile}</p>
+                        <p><strong>Address Type:</strong> ${customerInfo.addressType}</p>
+                        <p><strong>Block/Flat:</strong> ${customerInfo.blockFlat}</p>
+                        <p><strong>Full Address:</strong> ${customerInfo.fullAddress}</p>
+                    </div>
+                    
+                    <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                        <button type="button" onclick="confirmAddressAndShowPayment()" 
+                                style="flex: 1; background: #2ecc71; color: white; border: none; padding: 12px; border-radius: 6px; cursor: pointer;">
+                            ✅ Use This Address
+                        </button>
+                        <button type="button" onclick="editAddress()" 
+                                style="flex: 1; background: #6c757d; color: white; border: none; padding: 12px; border-radius: 6px; cursor: pointer;">
+                            ✏️ Edit Address
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="paymentSection" style="display: none;">
+                    <div style="background: #e8f5e8; padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid #2ecc71;">
+                        <p style="margin: 0; color: #27ae60; font-weight: 600;">
+                            <i class="fas fa-check-circle"></i> Address Confirmed
+                        </p>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="paymentMethod">Payment Method:</label>
+                        <select id="paymentMethod" required>
+                            <option value="">Select Payment Method</option>
+                            <option value="phonepe">PhonePe (Online)</option>
+                            <option value="cod">Cash on Delivery</option>
+                            <option value="payinapp">Pay in App Later</option>
+                        </select>
+                    </div>
+                    
+                    <button type="button" onclick="confirmFinalOrder()" 
+                            style="width: 100%; background: linear-gradient(135deg, #2ecc71, #27ae60); color: white; border: none; padding: 15px; border-radius: 8px; font-size: 1.1rem; font-weight: 600; cursor: pointer; margin-top: 15px;">
+                        <i class="fas fa-shopping-cart"></i>
+                        Confirm Order
+                    </button>
+                </div>
+            `;
+        }
+
+        // Confirm address and show payment section
+        function confirmAddressAndShowPayment() {
+            if (!savedCustomerInfo) {
+                alert('Error: Saved customer information not found');
+                return;
+            }
+            
+            // Disable address buttons and add visual confirmation
+            const addressButtons = document.querySelectorAll('button[onclick*="confirmAddressAndShowPayment"], button[onclick*="editAddress"]');
+            addressButtons.forEach(btn => {
+                btn.disabled = true;
+                btn.style.opacity = '0.6';
+            });
+            
+            // Show payment section with smooth animation
+            const paymentSection = document.getElementById('paymentSection');
+            paymentSection.style.display = 'block';
+            
+            // Smooth scroll to payment section
+            setTimeout(() => {
+                paymentSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 100);
+            
+            // Show confirmation message
+            showNotification('✅ Address confirmed! Please select payment method.', 'success');
+        }
+
+        // Confirm final order
+        function confirmFinalOrder() {
+            const paymentMethod = document.getElementById('paymentMethod').value;
+            
+            if (!paymentMethod) {
+                alert('Please select a payment method');
+                return;
+            }
+            
+            if (!savedCustomerInfo) {
+                alert('Error: Saved customer information not found');
+                return;
+            }
+            
+            // Submit order with saved customer info
+            const customerInfo = {
+                name: savedCustomerInfo.name,
+                mobile: savedCustomerInfo.mobile,
+                addressType: savedCustomerInfo.addressType,
+                blockFlat: savedCustomerInfo.blockFlat,
+                fullAddress: savedCustomerInfo.fullAddress,
+                paymentMethod: paymentMethod
+            };
+            
+            submitOrder(customerInfo);
+        }
+
+        // Edit address (show regular form)
+        function editAddress() {
+            showRegularCheckoutForm();
+        }
+
+        // Show regular checkout form
+        function showRegularCheckoutForm() {
+            const checkoutForm = document.getElementById('checkoutForm');
+            
+            checkoutForm.innerHTML = `
+                <div class="form-group">
+                    <label for="customerName">Full Name:</label>
+                    <input type="text" id="customerName" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="customerMobile">Mobile Number:</label>
+                    <input type="tel" id="customerMobile" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="addressType">Address Type:</label>
+                    <select id="addressType" required>
+                        <option value="">Select Address Type</option>
+                        <option value="apartment">Apartment</option>
+                        <option value="villa">Villa</option>
+                        <option value="house">Independent House</option>
+                        <option value="office">Office</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="blockFlat">Block/Flat/Villa Number:</label>
+                    <input type="text" id="blockFlat" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="fullAddress">Full Address:</label>
+                    <textarea id="fullAddress" rows="3" required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="paymentMethod">Payment Method:</label>
+                    <select id="paymentMethod" required>
+                        <option value="">Select Payment Method</option>
+                        <option value="phonepe">PhonePe (Online)</option>
+                        <option value="cod">Cash on Delivery</option>
+                        <option value="payinapp">Pay in App Later</option>
+                    </select>
+                </div>
+                
+                <button type="submit" style="width: 100%; background: linear-gradient(135deg, #2ecc71, #27ae60); color: white; border: none; padding: 15px; border-radius: 8px; font-size: 1.1rem; font-weight: 600; cursor: pointer;">
+                    <i class="fas fa-shopping-cart"></i>
+                    Confirm Order
+                </button>
+            `;
+            
+            // Pre-populate form fields if we have saved customer info
+            if (savedCustomerInfo) {
+                // Wait a moment for DOM to update, then populate
+                setTimeout(() => {
+                    document.getElementById('customerName').value = savedCustomerInfo.name || '';
+                    document.getElementById('customerMobile').value = savedCustomerInfo.mobile || '';
+                    document.getElementById('addressType').value = savedCustomerInfo.addressType || '';
+                    document.getElementById('blockFlat').value = savedCustomerInfo.blockFlat || '';
+                    document.getElementById('fullAddress').value = savedCustomerInfo.fullAddress || '';
+                }, 10);
+            }
+        }
+
+        // Submit order (unified function for both saved and new address)
+        async function submitOrder(customerInfo) {
+            if (!userToken) {
+                showNotification('Please login to place an order', 'error');
+                showUserAuth();
+                return;
+            }
+            
+            // Debug: Log user token and customer info
+            console.log('User token:', userToken ? 'Present' : 'Missing');
+            console.log('Customer info:', customerInfo);
+            
+            try {
+                const totals = calculateTotals();
+                
+                // Handle UPI payment for PhonePe
+                if (customerInfo.paymentMethod === 'phonepe') {
+                    // First create the order to get order ID
+                    const orderResponse = await fetch('/api/orders/prepare', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${userToken}`
+                        },
+                        body: JSON.stringify({
+                            customer_info: customerInfo,
+                            totals: totals
+                        })
+                    });
+
+                    const responseText = await orderResponse.text();
+                    console.log('Order prepare response:', responseText);
+                    
+                    let orderData;
+                    try {
+                        orderData = JSON.parse(responseText);
+                    } catch (e) {
+                        console.error('Failed to parse order response as JSON:', e);
+                        console.error('Response was:', responseText);
+                        showNotification('Server error - please try again', 'error');
+                        return;
+                    }
+                    if (orderData.success) {
+                        // Create UPI payment link
+                        const orderId = orderData.order.id.substr(0,8);
+                        const amount = totals.total;
+                        const upiId = 'greenobasket@paytm'; // Replace with your actual UPI ID
+                        const merchantName = 'GreenObasket';
+                        const transactionNote = `Order ${orderId} - Fresh Groceries`;
+                        
+                        // UPI URL scheme (works with PhonePe, Google Pay, Paytm, etc.)
+                        const upiUrl = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(merchantName)}&tr=${orderId}&am=${amount}&cu=INR&tn=${encodeURIComponent(transactionNote)}`;
+                        
+                        // Show payment confirmation
+                        const proceedWithPayment = confirm(
+                            `🔐 Secure UPI Payment\n\n` +
+                            `Order ID: ${orderId}\n` +
+                            `Amount: ₹${amount}\n` +
+                            `Merchant: ${merchantName}\n\n` +
+                            `Click OK to open your UPI app (PhonePe/Google Pay) for payment.\n` +
+                            `After payment, we'll confirm your order automatically.`
+                        );
+
+                        if (proceedWithPayment) {
+                            // Open UPI app
+                            window.location.href = upiUrl;
+                            
+                            // Wait a moment and then confirm the order
+                            setTimeout(async () => {
+                                // Confirm the order
+                                const confirmResponse = await fetch('/api/orders/confirm', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'Authorization': `Bearer ${userToken}`
+                                    },
+                                    body: JSON.stringify({
+                                        order_id: orderData.order.id,
+                                        payment_status: 'pending' // In real app, you'd verify payment status
+                                    })
+                                });
+
+                                const confirmResponseText = await confirmResponse.text();
+                                console.log('Order confirm response:', confirmResponseText);
+                                
+                                let confirmData;
+                                try {
+                                    confirmData = JSON.parse(confirmResponseText);
+                                } catch (e) {
+                                    console.error('Failed to parse confirm response as JSON:', e);
+                                    console.error('Response was:', confirmResponseText);
+                                    showNotification('Payment confirmation failed - please contact support', 'error');
+                                    return;
+                                }
+                                if (confirmData.success) {
+                                    showPaymentSuccess(confirmData.order, customerInfo, totals);
+                                } else if (confirmData.error === 'Authentication required') {
+                                    logoutUser();
+                                    showNotification('Please login again to continue', 'error');
+                                }
+                            }, 3000); // Wait 3 seconds before confirming
+                            
+                            return; // Exit here for UPI payment flow
+                        } else {
+                            return; // User cancelled payment
+                        }
+                    } else if (orderData.error === 'Authentication required') {
+                        logoutUser();
+                        showNotification('Please login again to continue', 'error');
+                        return;
+                    }
+                }
+
+                // Handle regular order creation for COD and Pay in App
+                const response = await fetch('/api/orders', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${userToken}`
+                    },
+                    body: JSON.stringify({
+                        customer_info: customerInfo,
+                        totals: totals
+                    })
+                });
+
+                const responseText = await response.text();
+                console.log('Order creation response:', responseText);
+                
+                let data;
+                try {
+                    data = JSON.parse(responseText);
+                } catch (e) {
+                    console.error('Failed to parse order creation response as JSON:', e);
+                    console.error('Response was:', responseText);
+                    showNotification('Server error - please try again', 'error');
+                    return;
+                }
+                if (data.success) {
+                    showPaymentSuccess(data.order, customerInfo, totals);
+                } else if (data.error === 'Authentication required') {
+                    logoutUser();
+                    showNotification('Please login again to continue', 'error');
+                } else {
+                    showNotification(data.error || 'Error placing order', 'error');
+                }
+            } catch (error) {
+                console.error('Error during checkout:', error);
+                showNotification('Error placing order', 'error');
+            }
+        }
+
+        // Close checkout form
+        function closeCheckoutForm() {
+            document.getElementById('checkoutModal').style.display = 'none';
+        }
+
+        // Handle checkout form submission
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('checkoutForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                // Check if paymentMethod element exists (for regular form)
+                const paymentElement = document.getElementById('paymentMethod');
+                if (!paymentElement) {
+                    // Form is in confirmation mode, submission is handled by confirmFinalOrder
+                    return;
+                }
+                
+                const formData = {
+                    name: document.getElementById('customerName').value,
+                    mobile: document.getElementById('customerMobile').value,
+                    addressType: document.getElementById('addressType').value,
+                    blockFlat: document.getElementById('blockFlat').value,
+                    fullAddress: document.getElementById('fullAddress').value,
+                    paymentMethod: paymentElement.value
+                };
+                
+                // Validate all fields
+                if (!formData.name || !formData.mobile || !formData.addressType || !formData.blockFlat || !formData.fullAddress || !formData.paymentMethod) {
+                    showNotification('Please fill in all required fields', 'error');
+                    return;
+                }
+                
+                // Call unified submit function
+                await submitOrder(formData);
+            });
+        });
+
+        // Show payment success message and complete order
+        async function showPaymentSuccess(order, customerInfo, totals) {
+            const paymentText = customerInfo.paymentMethod === 'phonepe' ? 'UPI Payment (PhonePe/Google Pay)' : 
+                              customerInfo.paymentMethod === 'cod' ? 'Cash on Delivery' : 'Pay in App';
+            
+            alert(`🎉 Order placed successfully!\n\n` +
+                  `Order ID: ${order.id.substr(0,8)}\n` +
+                  `Customer: ${customerInfo.name}\n` +
+                  `Mobile: ${customerInfo.mobile}\n` +
+                  `Address: ${customerInfo.blockFlat}, ${customerInfo.fullAddress}\n` +
+                  `Subtotal: ₹${totals.subtotal}\n` +
+                  `Delivery: ${totals.deliveryText}\n` +
+                  `Total: ₹${totals.total}\n` +
+                  `Payment: ${paymentText}\n` +
+                  `Estimated Delivery: ${order.estimated_delivery}\n\n` +
+                  `Thank you for choosing GreenObasket!`);
+            
+            // Close checkout modal
+            closeCheckoutForm();
+            
+            // Send admin notification
+            await sendAdminNotification(order, customerInfo, totals);
+            
+            // Reset form and close modal
+            document.getElementById('checkoutForm').reset();
+            closeCheckoutForm();
+            await updateCartCount();
+            loadProducts(); // Refresh products to update stock
+            
+            // Show success notification
+            showNotification('Order placed successfully! 🎉', 'success');
+        }
+
+        // Send admin notification
+        async function sendAdminNotification(order, customerInfo, totals) {
+            try {
+                await fetch('/api/admin/notifications', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        type: 'new_order',
+                        order: order,
+                        customer: customerInfo,
+                        totals: totals,
+                        timestamp: new Date().toISOString()
+                    })
+                });
+            } catch (error) {
+                console.error('Error sending admin notification:', error);
+            }
+        }
+
+        // Show notification
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('cartModal');
+            if (event.target === modal) {
+                closeCart();
+            }
+        }
+    </script>
+</body>
+</html> 
