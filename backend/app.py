@@ -21,6 +21,7 @@ ADMIN_PASSWORD = "greenbasket123"  # Change this in production
 
 # In-memory storage (in production, use a database)
 admin_notifications = []  # Store admin notifications
+user_notifications = {}  # Store user notifications by mobile number: {mobile: [notifications]}
 
 # User authentication storage
 users_db = {}  # {mobile_number: {password: str, name: str, address: str, email: str, created_at: datetime}}
@@ -1277,7 +1278,7 @@ def confirm_order():
     confirmed_order = None
     for existing_order in orders_db:
         if existing_order.get('id') == order_id and existing_order.get('status') == 'pending_payment':
-            existing_order['status'] = 'confirmed'
+            existing_order['status'] = 'received'
             existing_order['payment_status'] = payment_status
             existing_order['confirmed_at'] = datetime.now().isoformat()
             confirmed_order = existing_order
@@ -1290,10 +1291,10 @@ def confirm_order():
             "user_mobile": user_mobile,  # Link order to user
             "customer_info": data.get('customer_info', {}),
             "items": cart.copy(),
-            "status": "order_received",
+            "status": "received",
             "status_history": [
                 {
-                    "status": "order_received",
+                    "status": "received",
                     "timestamp": datetime.now().isoformat(),
                     "message": "Order received and payment confirmed"
                 }
@@ -1382,10 +1383,10 @@ def create_order():
             "delivery_fee": totals.get('deliveryFee', 0),
             "total": totals.get('total', 0),
             "payment_method": customer_info.get('paymentMethod', 'cod'),
-            "status": "order_received",
+            "status": "received",
             "status_history": [
                 {
-                    "status": "order_received",
+                    "status": "received",
                     "timestamp": datetime.now().isoformat(),
                     "message": "Order received successfully"
                 }
@@ -1883,8 +1884,8 @@ def update_order_status(order_id):
     estimated_minutes = data.get('estimated_minutes', 60)
     custom_message = data.get('message', '')
     
-    # Valid status transitions
-    valid_statuses = ['order_received', 'confirmed', 'packed', 'out_for_delivery', 'delivered', 'cancelled']
+    # Valid status transitions - Updated to match requirements
+    valid_statuses = ['received', 'packing', 'in_transit', 'delivered', 'cancelled']
     
     if new_status not in valid_statuses:
         return jsonify({"success": False, "error": "Invalid status"}), 400
@@ -1894,14 +1895,13 @@ def update_order_status(order_id):
     if not order:
         return jsonify({"success": False, "error": "Order not found"}), 404
     
-    # Status messages
+    # Status messages - Updated for new 4-state system
     status_messages = {
-        'order_received': 'Order received successfully',
-        'confirmed': 'Order confirmed by our team',
-        'packed': 'Your order has been packed and is ready for delivery',
-        'out_for_delivery': f'Greenies are on the way! Expected delivery in {estimated_minutes} minutes',
-        'delivered': 'Order delivered successfully',
-        'cancelled': 'Order has been cancelled'
+        'received': '📋 Order received successfully',
+        'packing': '📦 Your order is being packed by our team',
+        'in_transit': f'🚚 Your order is on the way! Expected delivery in {estimated_minutes} minutes',
+        'delivered': '✅ Order delivered successfully',
+        'cancelled': '❌ Order has been cancelled'
     }
     
     # Update order status
@@ -1921,10 +1921,76 @@ def update_order_status(order_id):
         "message": message
     })
     
+    # Send notification to user
+    user_mobile = order.get('user_mobile')
+    if user_mobile:
+        if user_mobile not in user_notifications:
+            user_notifications[user_mobile] = []
+        
+        user_notifications[user_mobile].append({
+            "id": f"notif_{datetime.now().timestamp()}",
+            "order_id": order_id,
+            "type": "order_status_update",
+            "title": f"Order Status Updated",
+            "message": message,
+            "status": new_status,
+            "timestamp": datetime.now().isoformat(),
+            "read": False
+        })
+    
     return jsonify({
         "success": True,
         "message": f"Order status updated to {new_status}",
-        "order": order
+        "order": order,
+        "notification_sent": bool(user_mobile)
+    })
+
+@app.route('/api/user/notifications', methods=['GET'])
+def get_user_notifications():
+    """Get user notifications"""
+    session_token = request.headers.get('Authorization', '').replace('Bearer ', '')
+    
+    if not is_user_authenticated(session_token):
+        return jsonify({
+            "success": False,
+            "error": "Authentication required"
+        }), 401
+    
+    user_mobile = get_user_from_token(session_token)
+    notifications = user_notifications.get(user_mobile, [])
+    
+    # Sort by timestamp (newest first)
+    notifications.sort(key=lambda x: x.get('timestamp', ''), reverse=True)
+    
+    return jsonify({
+        "success": True,
+        "notifications": notifications,
+        "unread_count": len([n for n in notifications if not n.get('read', False)])
+    })
+
+@app.route('/api/user/notifications/<notification_id>/read', methods=['PUT'])
+def mark_user_notification_read(notification_id):
+    """Mark notification as read"""
+    session_token = request.headers.get('Authorization', '').replace('Bearer ', '')
+    
+    if not is_user_authenticated(session_token):
+        return jsonify({
+            "success": False,
+            "error": "Authentication required"
+        }), 401
+    
+    user_mobile = get_user_from_token(session_token)
+    notifications = user_notifications.get(user_mobile, [])
+    
+    # Find and mark notification as read
+    for notification in notifications:
+        if notification.get('id') == notification_id:
+            notification['read'] = True
+            break
+    
+    return jsonify({
+        "success": True,
+        "message": "Notification marked as read"
     })
 
 @app.route('/api/admin/orders', methods=['GET'])
@@ -1969,8 +2035,8 @@ def get_user_orders():
     user_orders = [order for order in orders_db if order.get('user_mobile') == user_mobile]
     user_orders.sort(key=lambda x: x.get('created_at', ''), reverse=True)
     
-    # Separate current and previous orders
-    current_orders = [order for order in user_orders if order.get('status') in ['order_received', 'confirmed', 'packed', 'out_for_delivery']]
+    # Separate current and previous orders - Updated status names
+    current_orders = [order for order in user_orders if order.get('status') in ['received', 'packing', 'in_transit']]
     previous_orders = [order for order in user_orders if order.get('status') in ['delivered', 'cancelled']]
     
     return jsonify({
