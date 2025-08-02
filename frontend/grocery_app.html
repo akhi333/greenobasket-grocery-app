@@ -613,6 +613,51 @@
             font-weight: 600;
         }
 
+        .live-cart-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .cart-control-btn {
+            background: #f8f9fa;
+            border: 1px solid #e1e8ed;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: #2ecc71;
+            font-size: 0.85rem;
+        }
+
+        .cart-control-btn:hover:not(:disabled) {
+            background: #e9f7ef;
+            border-color: #2ecc71;
+            transform: scale(1.05);
+        }
+
+        .cart-control-btn:disabled {
+            background: #f5f5f5;
+            color: #ccc;
+            cursor: not-allowed;
+            border-color: #e5e5e5;
+        }
+
+        .cart-control-btn.remove-btn {
+            background: #fff5f5;
+            color: #e74c3c;
+            border-color: #fadbd8;
+        }
+
+        .cart-control-btn.remove-btn:hover {
+            background: #ffebee;
+            border-color: #e74c3c;
+        }
+
         .live-cart-total {
             margin-top: 1rem;
             padding-top: 1rem;
@@ -1254,8 +1299,8 @@
             </div>
             <div class="header-actions">
                 <button class="cart-btn" onclick="openCart()">
-                    <i class="fas fa-shopping-cart"></i>
-                    Cart
+                    <i class="fas fa-list-alt"></i>
+                    My Orders
                     <span class="cart-count" id="cartCount">0</span>
                 </button>
                 <div class="user-auth" id="userAuth">
@@ -2126,7 +2171,7 @@
                 return;
             }
             
-            // Render cart items
+            // Render cart items with interactive controls
             liveCartItems.innerHTML = cart.map(item => {
                 if (item.quantity_grams) {
                     // Gram-based item
@@ -2136,7 +2181,18 @@
                                 <div class="live-cart-item-name">${item.name}</div>
                                 <div class="live-cart-item-price">₹${item.total_price.toFixed(2)} for ${item.quantity_grams}g</div>
                             </div>
-                            <div class="live-cart-quantity">${item.quantity_grams}g</div>
+                            <div class="live-cart-controls">
+                                <button class="cart-control-btn" onclick="updateCartQuantityGrams('${item.id}', ${item.quantity_grams - 250})" ${item.quantity_grams <= 250 ? 'disabled' : ''}>
+                                    <i class="fas fa-minus"></i>
+                                </button>
+                                <div class="live-cart-quantity">${item.quantity_grams}g</div>
+                                <button class="cart-control-btn" onclick="updateCartQuantityGrams('${item.id}', ${item.quantity_grams + 250})">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                                <button class="cart-control-btn remove-btn" onclick="removeFromCartLive('${item.id}')" title="Remove item">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
                         </div>
                     `;
                 } else {
@@ -2147,7 +2203,18 @@
                                 <div class="live-cart-item-name">${item.name}</div>
                                 <div class="live-cart-item-price">₹${item.price} each</div>
                             </div>
-                            <div class="live-cart-quantity">×${item.quantity}</div>
+                            <div class="live-cart-controls">
+                                <button class="cart-control-btn" onclick="updateCartQuantityRegular('${item.id}', ${item.quantity - 1})" ${item.quantity <= 1 ? 'disabled' : ''}>
+                                    <i class="fas fa-minus"></i>
+                                </button>
+                                <div class="live-cart-quantity">×${item.quantity}</div>
+                                <button class="cart-control-btn" onclick="updateCartQuantityRegular('${item.id}', ${item.quantity + 1})">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                                <button class="cart-control-btn remove-btn" onclick="removeFromCartLive('${item.id}')" title="Remove item">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
                         </div>
                     `;
                 }
@@ -2931,6 +2998,93 @@
                 }
             } catch (error) {
                 console.error('Error updating quantity:', error);
+                showNotification('Error updating cart', 'error');
+            }
+        }
+
+        // Remove from cart from live cart
+        async function removeFromCartLive(productId) {
+            await removeFromCart(productId);
+        }
+
+        // Update cart quantity for gram-based items
+        async function updateCartQuantityGrams(productId, newGrams) {
+            if (!userToken) {
+                showNotification('Please login to update cart', 'error');
+                return;
+            }
+            
+            if (newGrams <= 0) {
+                await removeFromCart(productId);
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/cart/update', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${userToken}`
+                    },
+                    body: JSON.stringify({
+                        product_id: productId,
+                        quantity_grams: newGrams
+                    })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    await updateCartCount();
+                    showNotification('Cart updated! 🛒', 'success');
+                } else if (data.error === 'Authentication required') {
+                    logoutUser();
+                    showNotification('Please login again to continue', 'error');
+                } else {
+                    showNotification(data.error || 'Error updating cart', 'error');
+                }
+            } catch (error) {
+                console.error('Error updating cart quantity:', error);
+                showNotification('Error updating cart', 'error');
+            }
+        }
+
+        // Update cart quantity for regular items
+        async function updateCartQuantityRegular(productId, newQuantity) {
+            if (!userToken) {
+                showNotification('Please login to update cart', 'error');
+                return;
+            }
+            
+            if (newQuantity <= 0) {
+                await removeFromCart(productId);
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/cart/update', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${userToken}`
+                    },
+                    body: JSON.stringify({
+                        product_id: productId,
+                        quantity: newQuantity
+                    })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    await updateCartCount();
+                    showNotification('Cart updated! 🛒', 'success');
+                } else if (data.error === 'Authentication required') {
+                    logoutUser();
+                    showNotification('Please login again to continue', 'error');
+                } else {
+                    showNotification(data.error || 'Error updating cart', 'error');
+                }
+            } catch (error) {
+                console.error('Error updating cart quantity:', error);
                 showNotification('Error updating cart', 'error');
             }
         }
