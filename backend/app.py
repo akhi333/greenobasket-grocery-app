@@ -2342,6 +2342,171 @@ def admin_toggle_product_visibility(product_id):
         "visible": product['visible']
     })
 
+# Location tracking endpoints
+@app.route('/api/location/verify', methods=['POST'])
+def verify_location():
+    """Verify if delivery is available to the given location"""
+    try:
+        data = request.get_json()
+        latitude = data.get('latitude')
+        longitude = data.get('longitude')
+        address = data.get('address', '')
+        
+        if not latitude or not longitude:
+            return jsonify({
+                "success": False,
+                "error": "Latitude and longitude are required"
+            }), 400
+        
+        # Service area configuration
+        SERVICE_CENTER = {
+            'lat': 17.385044,  # Hyderabad center
+            'lng': 78.486671,
+            'max_radius_km': 25,
+            'free_delivery_radius_km': 10,
+            'delivery_fee_per_km': 5,
+            'min_delivery_fee': 20,
+            'max_delivery_fee': 100
+        }
+        
+        # Calculate distance using Haversine formula
+        import math
+        
+        def calculate_distance(lat1, lng1, lat2, lng2):
+            R = 6371  # Earth's radius in kilometers
+            dlat = math.radians(lat2 - lat1)
+            dlng = math.radians(lng2 - lng1)
+            a = (math.sin(dlat/2) * math.sin(dlat/2) + 
+                 math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) * 
+                 math.sin(dlng/2) * math.sin(dlng/2))
+            c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
+            return R * c
+        
+        distance = calculate_distance(
+            latitude, longitude,
+            SERVICE_CENTER['lat'], SERVICE_CENTER['lng']
+        )
+        
+        in_service_area = distance <= SERVICE_CENTER['max_radius_km']
+        
+        # Calculate delivery fee and time
+        delivery_fee = 0
+        estimated_time = None
+        
+        if in_service_area:
+            if distance > SERVICE_CENTER['free_delivery_radius_km']:
+                extra_distance = distance - SERVICE_CENTER['free_delivery_radius_km']
+                delivery_fee = min(
+                    max(extra_distance * SERVICE_CENTER['delivery_fee_per_km'], 
+                        SERVICE_CENTER['min_delivery_fee']),
+                    SERVICE_CENTER['max_delivery_fee']
+                )
+            
+            # Estimate delivery time (30 min processing + travel time at 30 km/h)
+            estimated_time = round(30 + (distance / 30) * 60)
+        
+        return jsonify({
+            "success": True,
+            "location_data": {
+                "distance_km": round(distance, 2),
+                "in_service_area": in_service_area,
+                "delivery_fee": delivery_fee,
+                "estimated_delivery_minutes": estimated_time,
+                "address": address
+            }
+        })
+        
+    except Exception as e:
+        print(f"Error in verify_location: {str(e)}")
+        return jsonify({
+            "success": False,
+            "error": "Location verification failed"
+        }), 500
+
+@app.route('/api/location/geocode', methods=['POST'])
+def geocode_address():
+    """Convert address to coordinates (mock implementation)"""
+    try:
+        data = request.get_json()
+        address = data.get('address', '')
+        
+        if not address:
+            return jsonify({
+                "success": False,
+                "error": "Address is required"
+            }), 400
+        
+        # Mock geocoding - in production, use Google Maps API or similar
+        # Return coordinates within Hyderabad area
+        mock_locations = {
+            'hyderabad': {'lat': 17.385044, 'lng': 78.486671},
+            'banjara': {'lat': 17.413979, 'lng': 78.447266},
+            'jubilee': {'lat': 17.431579, 'lng': 78.419159},
+            'gachibowli': {'lat': 17.440217, 'lng': 78.348915},
+            'kondapur': {'lat': 17.474532, 'lng': 78.364937}
+        }
+        
+        # Simple matching based on keywords in address
+        coordinates = mock_locations['hyderabad']  # default
+        address_lower = address.lower()
+        
+        for location, coords in mock_locations.items():
+            if location in address_lower:
+                coordinates = coords
+                break
+        
+        return jsonify({
+            "success": True,
+            "coordinates": coordinates
+        })
+        
+    except Exception as e:
+        print(f"Error in geocode_address: {str(e)}")
+        return jsonify({
+            "success": False,
+            "error": "Geocoding failed"
+        }), 500
+
+@app.route('/api/location/reverse-geocode', methods=['POST'])
+def reverse_geocode():
+    """Convert coordinates to address (mock implementation)"""
+    try:
+        data = request.get_json()
+        latitude = data.get('latitude')
+        longitude = data.get('longitude')
+        
+        if not latitude or not longitude:
+            return jsonify({
+                "success": False,
+                "error": "Latitude and longitude are required"
+            }), 400
+        
+        # Mock reverse geocoding - in production, use Google Maps API
+        mock_addresses = [
+            "123 Green Valley Road, Banjara Hills, Hyderabad, Telangana 500034",
+            "456 Organic Street, Jubilee Hills, Hyderabad, Telangana 500033", 
+            "789 Fresh Market Lane, Gachibowli, Hyderabad, Telangana 500032",
+            "101 Farm Fresh Avenue, Kondapur, Hyderabad, Telangana 500084",
+            "202 Healthy Living Street, Madhapur, Hyderabad, Telangana 500081"
+        ]
+        
+        # Generate deterministic address based on coordinates
+        import hashlib
+        coord_hash = hashlib.md5(f"{latitude:.6f},{longitude:.6f}".encode()).hexdigest()
+        address_index = int(coord_hash[:8], 16) % len(mock_addresses)
+        
+        return jsonify({
+            "success": True,
+            "address": mock_addresses[address_index]
+        })
+        
+    except Exception as e:
+        print(f"Error in reverse_geocode: {str(e)}")
+        return jsonify({
+            "success": False,
+            "error": "Reverse geocoding failed"
+        }), 500
+
 if __name__ == '__main__':
     print("🌱 GreenObasket - Premium Grocery App Starting...")
     print("📱 Frontend: http://localhost:5001")
