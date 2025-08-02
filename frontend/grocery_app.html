@@ -4,6 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GreenObasket - Premium Online Grocery Store</title>
+    
+    <!-- PWA Configuration -->
+    <link rel="manifest" href="/static/manifest.json">
+    <meta name="theme-color" content="#2ecc71">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="GreenObasket">
+    <link rel="apple-touch-icon" href="/static/images/icons/icon-192x192.png">
+    
+    <!-- SEO and Organic Focus -->
+    <meta name="description" content="Premium organic groceries delivered fresh from farm to your table. 100% organic fruits, vegetables, spices, and dairy products.">
+    <meta name="keywords" content="organic groceries, farm fresh, organic vegetables, organic fruits, healthy food delivery">
+    <meta property="og:title" content="GreenObasket - Premium Organic Grocery Store">
+    <meta property="og:description" content="Fresh organic groceries delivered to your doorstep">
+    <meta property="og:type" content="website">
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         * {
@@ -3647,6 +3663,212 @@
                 closeCart();
             }
         }
+
+        // PWA Installation and Service Worker
+        let deferredPrompt;
+        
+        // Register Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/static/sw.js')
+                    .then((registration) => {
+                        console.log('GreenObasket: SW registered: ', registration);
+                    })
+                    .catch((registrationError) => {
+                        console.log('GreenObasket: SW registration failed: ', registrationError);
+                    });
+            });
+        }
+
+        // PWA Install Prompt
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            // Show install button or banner
+            const installBanner = document.createElement('div');
+            installBanner.className = 'install-banner';
+            installBanner.innerHTML = `
+                <div class="install-content">
+                    <i class="fas fa-mobile-alt"></i>
+                    <span>Install GreenObasket for a better shopping experience!</span>
+                    <button onclick="installPWA()" class="install-btn">Install</button>
+                    <button onclick="dismissInstall()" class="dismiss-btn">&times;</button>
+                </div>
+            `;
+            document.body.appendChild(installBanner);
+        });
+
+        function installPWA() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('User accepted the install prompt');
+                        showNotification('GreenObasket installed successfully! 📱', 'success');
+                    }
+                    deferredPrompt = null;
+                    dismissInstall();
+                });
+            }
+        }
+
+        function dismissInstall() {
+            const banner = document.querySelector('.install-banner');
+            if (banner) {
+                banner.remove();
+            }
+        }
+
+        // Enhanced search functionality
+        function performSearch() {
+            const searchTerm = document.getElementById('searchBox').value.toLowerCase();
+            const products = document.querySelectorAll('.product-card');
+            let visibleCount = 0;
+
+            products.forEach(product => {
+                const productName = product.querySelector('.product-name').textContent.toLowerCase();
+                const productDesc = product.querySelector('.product-description').textContent.toLowerCase();
+                const productCategory = product.dataset.category?.toLowerCase() || '';
+                
+                if (productName.includes(searchTerm) || 
+                    productDesc.includes(searchTerm) || 
+                    productCategory.includes(searchTerm)) {
+                    product.style.display = 'block';
+                    visibleCount++;
+                } else {
+                    product.style.display = 'none';
+                }
+            });
+
+            // Show search results count
+            const resultsInfo = document.getElementById('searchResults') || createSearchResultsInfo();
+            resultsInfo.textContent = searchTerm ? 
+                `Found ${visibleCount} organic products matching "${searchTerm}"` : 
+                'Showing all organic products';
+        }
+
+        function createSearchResultsInfo() {
+            const resultsInfo = document.createElement('div');
+            resultsInfo.id = 'searchResults';
+            resultsInfo.className = 'search-results-info';
+            document.querySelector('.products-grid').before(resultsInfo);
+            return resultsInfo;
+        }
+
+        // Add search on Enter key
+        document.getElementById('searchBox').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+
+        // Add organic badges to products
+        function addOrganicBadges() {
+            const products = document.querySelectorAll('.product-card');
+            products.forEach(product => {
+                const badge = document.createElement('div');
+                badge.className = 'organic-badge';
+                badge.innerHTML = '<i class="fas fa-leaf"></i> 100% Organic';
+                product.querySelector('.product-image').appendChild(badge);
+            });
+        }
+
+        // Initialize organic features
+        document.addEventListener('DOMContentLoaded', function() {
+            addOrganicBadges();
+        });
     </script>
+
+    <!-- PWA Install Banner Styles -->
+    <style>
+        .install-banner {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            z-index: 10000;
+            animation: slideUp 0.3s ease;
+        }
+
+        .install-content {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .install-btn {
+            background: white;
+            color: #2ecc71;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .install-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .dismiss-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            margin-left: auto;
+        }
+
+        .organic-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .search-results-info {
+            text-align: center;
+            padding: 15px;
+            background: rgba(46, 204, 113, 0.1);
+            border-radius: 10px;
+            margin-bottom: 20px;
+            color: #27ae60;
+            font-weight: 500;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            .install-banner {
+                left: 10px;
+                right: 10px;
+            }
+            
+            .install-content {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
 </body>
 </html> 

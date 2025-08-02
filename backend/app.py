@@ -44,21 +44,33 @@ products_db = {
         "visible": True,
         "quantity_type": "grams",  # New field: "grams", "pieces", "liters"
         "min_quantity": 250,       # Minimum quantity for this type
-        "max_quantity": 5000       # Maximum quantity for this type
+        "max_quantity": 5000,      # Maximum quantity for this type
+        "organic_certified": True,
+        "certification": "USDA Organic",
+        "farm_source": "Green Valley Organic Farms, Maharashtra",
+        "pesticide_free": True,
+        "gmo_free": True,
+        "carbon_footprint": "Low"
     },
     "2": {
         "id": "2",
-        "name": "Fresh Apples",
+        "name": "Organic Fresh Apples",
         "price": 120,
         "category": "Fruits",
         "image": "/static/images/products/fruits/apples.jpg",
-        "description": "Crispy red apples from Kashmir",
+        "description": "Crispy organic red apples from Kashmir, pesticide-free",
         "weight": "1kg",
         "stock": 30,
         "visible": True,
         "quantity_type": "grams",
         "min_quantity": 250,
-        "max_quantity": 3000
+        "max_quantity": 3000,
+        "organic_certified": True,
+        "certification": "India Organic",
+        "farm_source": "Kashmir Organic Orchards",
+        "pesticide_free": True,
+        "gmo_free": True,
+        "carbon_footprint": "Medium"
     },
     "3": {
         "id": "3",
@@ -2377,4 +2389,188 @@ if __name__ == '__main__':
     print(f"Password: {ADMIN_PASSWORD}")
     print("=" * 60)
     
-    app.run(debug=True, host='0.0.0.0', port=5001) 
+    app.run(debug=True, host='0.0.0.0', port=5001)
+
+# PWA-specific routes
+@app.route('/static/manifest.json')
+def serve_manifest():
+    """Serve PWA manifest file"""
+    return send_from_directory(app.static_folder, 'manifest.json', mimetype='application/json')
+
+@app.route('/static/sw.js')
+def serve_sw():
+    """Serve service worker file"""
+    return send_from_directory(app.static_folder, 'sw.js', mimetype='application/javascript')
+
+# Add organic information to products
+@app.route('/api/products/organic-info/<product_id>', methods=['GET'])
+def get_organic_info(product_id):
+    """Get detailed organic information for a product"""
+    if product_id not in products_db:
+        return jsonify({"error": "Product not found"}), 404
+    
+    product = products_db[product_id]
+    
+    # Enhanced organic information
+    organic_info = {
+        "certification": "USDA Organic Certified",
+        "farm_source": get_farm_source(product["category"]),
+        "pesticide_free": True,
+        "gmo_free": True,
+        "harvest_season": get_harvest_season(product["name"]),
+        "nutritional_benefits": get_nutritional_benefits(product["name"]),
+        "storage_tips": get_storage_tips(product["category"]),
+        "carbon_footprint": "Low - Locally sourced",
+        "shelf_life": get_shelf_life(product["category"])
+    }
+    
+    return jsonify(organic_info)
+
+def get_farm_source(category):
+    """Get farm source information based on category"""
+    farm_sources = {
+        "Fruits": "Green Valley Organic Farms, Maharashtra",
+        "Vegetables": "Sunrise Organic Collective, Punjab",
+        "Leafy Vegetables": "Fresh Greens Farm, Himachal Pradesh",
+        "Spices": "Spice Garden Organics, Kerala",
+        "Dairy": "Pure Milk Organic Dairy, Rajasthan",
+        "Pulses": "Heritage Pulse Farms, Madhya Pradesh",
+        "Millets": "Ancient Grains Co-op, Karnataka",
+        "Others": "Local Organic Partners Network",
+        "Pickles": "Traditional Foods Collective, Tamil Nadu"
+    }
+    return farm_sources.get(category, "Local Organic Farmers Network")
+
+def get_harvest_season(product_name):
+    """Get harvest season for products"""
+    seasons = {
+        "banana": "Year-round",
+        "apple": "September-November",
+        "mango": "April-July",
+        "grape": "February-April, November-January",
+        "pomegranate": "October-February",
+        "papaya": "Year-round",
+        "guava": "November-April",
+        "tomato": "October-March",
+        "spinach": "October-March",
+        "carrot": "November-February",
+        "onion": "November-April",
+        "potato": "December-March"
+    }
+    
+    for key in seasons:
+        if key.lower() in product_name.lower():
+            return seasons[key]
+    return "Seasonal availability varies"
+
+def get_nutritional_benefits(product_name):
+    """Get nutritional benefits for products"""
+    benefits = {
+        "banana": ["High in Potassium", "Natural Energy", "Digestive Health"],
+        "apple": ["Rich in Fiber", "Antioxidants", "Heart Health"],
+        "mango": ["Vitamin A & C", "Immune Boost", "Eye Health"],
+        "spinach": ["Iron Rich", "Folate", "Bone Health"],
+        "carrot": ["Beta Carotene", "Vision Health", "Antioxidants"],
+        "tomato": ["Lycopene", "Vitamin C", "Heart Health"]
+    }
+    
+    for key in benefits:
+        if key.lower() in product_name.lower():
+            return benefits[key]
+    return ["Natural Nutrition", "Organic Goodness", "Chemical-Free"]
+
+def get_storage_tips(category):
+    """Get storage tips based on category"""
+    tips = {
+        "Fruits": "Store in cool, dry place. Refrigerate when ripe.",
+        "Vegetables": "Keep in refrigerator crisper drawer.",
+        "Leafy Vegetables": "Wrap in damp cloth, refrigerate.",
+        "Spices": "Store in airtight containers, away from light.",
+        "Dairy": "Keep refrigerated at all times.",
+        "Pulses": "Store in airtight containers in cool, dry place.",
+        "Others": "Follow package instructions for best results."
+    }
+    return tips.get(category, "Store in cool, dry place away from direct sunlight.")
+
+def get_shelf_life(category):
+    """Get shelf life information"""
+    shelf_life = {
+        "Fruits": "3-7 days",
+        "Vegetables": "5-10 days",
+        "Leafy Vegetables": "2-5 days",
+        "Spices": "1-2 years",
+        "Dairy": "Check expiry date",
+        "Pulses": "6-12 months",
+        "Others": "Varies by product"
+    }
+    return shelf_life.get(category, "Check product labeling")
+
+# Enhanced search with organic focus
+@app.route('/api/search', methods=['GET'])
+def search_products():
+    """Enhanced search with organic and health focus"""
+    query = request.args.get('q', '').lower()
+    category = request.args.get('category', '')
+    organic_filter = request.args.get('organic', 'true')  # Default to organic
+    
+    if not query:
+        return jsonify({"products": []})
+    
+    results = []
+    for product_id, product in products_db.items():
+        if not product.get('visible', True):
+            continue
+            
+        # Search in name, description, category
+        searchable_text = f"{product['name']} {product['description']} {product['category']}".lower()
+        
+        # Add organic keywords for better search
+        organic_keywords = "organic natural fresh farm pesticide-free chemical-free healthy"
+        searchable_text += f" {organic_keywords}"
+        
+        if query in searchable_text:
+            if not category or product['category'].lower() == category.lower():
+                results.append(product)
+    
+    return jsonify({"products": results, "query": query, "count": len(results)})
+
+if __name__ == '__main__':
+    print("=" * 60)
+    print("🌱 GREENOBASKET ORGANIC GROCERY API 🌱")
+    print("=" * 60)
+    print("🏠 Customer Interface: http://localhost:5001")
+    print("👨‍💼 Admin Dashboard: http://localhost:5001/admin")
+    print("=" * 60)
+    print("📱 API Endpoints:")
+    print("GET  / - Customer login/register page")
+    print("GET  /shop - Customer shopping interface")
+    print("GET  /api/products - Get all products")
+    print("GET  /api/products/<id> - Get single product")
+    print("POST /api/cart/add - Add to cart")
+    print("POST /api/orders/prepare - Place order")
+    print("GET  /api/categories - Get categories")
+    print("GET  /api/stats - Get app stats")
+    print("GET  /api/products/organic-info/<id> - Get organic info")
+    print("GET  /api/search - Enhanced search")
+    print("=" * 60)
+    print("👨‍💼 Admin Endpoints:")
+    print("GET  /admin - Admin dashboard")
+    print("POST /admin/login - Admin login")
+    print("POST /api/admin/products - Add product")
+    print("PUT  /api/admin/products/<id> - Update product")
+    print("DEL  /api/admin/products/<id> - Delete product")
+    print("PUT  /api/admin/products/<id>/toggle-visibility - Toggle visibility")
+    print("GET  /api/admin/notifications - Get admin notifications")
+    print("GET  /api/admin/orders - Get all orders for admin")
+    print("PUT  /api/admin/orders/<id>/status - Update order status")
+    print("=" * 60)
+    print("🔑 Admin Credentials:")
+    print(f"Username: {ADMIN_USERNAME}")
+    print(f"Password: {ADMIN_PASSWORD}")
+    print("=" * 60)
+    print("🌿 PWA Features: Manifest, Service Worker, Offline Support")
+    print("🔍 Enhanced Search: Organic-focused product discovery")
+    print("🏷️ Organic Info: Certification, farm source, nutrition")
+    print("=" * 60)
+    
+    app.run(debug=True, host='0.0.0.0', port=5001)
