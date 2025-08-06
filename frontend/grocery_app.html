@@ -1222,6 +1222,133 @@
             color: #2ecc71;
         }
 
+        /* Location Tracking Styles */
+        .address-input-container {
+            position: relative;
+        }
+
+        .location-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .location-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 12px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 140px;
+        }
+
+        .location-btn:hover {
+            background: #2980b9;
+            transform: translateY(-1px);
+        }
+
+        .location-btn.verify-btn {
+            background: #2ecc71;
+        }
+
+        .location-btn.verify-btn:hover {
+            background: #27ae60;
+        }
+
+        .location-btn:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .location-btn i {
+            font-size: 0.9rem;
+        }
+
+        .location-status {
+            margin-top: 8px;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            display: none;
+        }
+
+        .location-status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+
+        .location-status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            display: block;
+        }
+
+        .location-status.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+            display: block;
+        }
+
+        .location-status.warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+            display: block;
+        }
+
+        .delivery-info {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .delivery-info.show {
+            display: block;
+        }
+
+        .delivery-info h4 {
+            color: #2c3e50;
+            margin: 0 0 8px 0;
+            font-size: 0.9rem;
+        }
+
+        .delivery-info .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+            font-size: 0.85rem;
+        }
+
+        .delivery-info .info-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .delivery-info .info-label {
+            color: #666;
+        }
+
+        .delivery-info .info-value {
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .header-content {
@@ -1547,7 +1674,20 @@
                 
                 <div class="form-group">
                     <label for="fullAddress">Complete Address *</label>
-                    <textarea id="fullAddress" rows="3" placeholder="Street, Area, Landmark, City, Pincode" required></textarea>
+                    <div class="address-input-container">
+                        <textarea id="fullAddress" rows="3" placeholder="Street, Area, Landmark, City, Pincode" required></textarea>
+                        <div class="location-actions">
+                            <button type="button" class="location-btn" onclick="getCurrentLocation()" title="Get current location">
+                                <i class="fas fa-location-arrow"></i>
+                                <span>Use Current Location</span>
+                            </button>
+                            <button type="button" class="location-btn verify-btn" onclick="verifyAddress()" title="Verify delivery area">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>Verify Address</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="locationStatus" class="location-status"></div>
                 </div>
                 
                 <div class="checkout-summary">
@@ -1563,6 +1703,22 @@
                     <div class="summary-row total-row">
                         <span>Total Amount:</span>
                         <span>₹<span id="checkoutTotal">0</span></span>
+                    </div>
+                </div>
+
+                <div id="deliveryInfo" class="delivery-info">
+                    <h4><i class="fas fa-shipping-fast"></i> Delivery Information</h4>
+                    <div class="info-item">
+                        <span class="info-label">Distance:</span>
+                        <span class="info-value" id="deliveryDistance">Calculating...</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Estimated Time:</span>
+                        <span class="info-value" id="deliveryTime">Calculating...</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Delivery Area:</span>
+                        <span class="info-value" id="deliveryArea">Verifying...</span>
                     </div>
                 </div>
                 
@@ -1658,6 +1814,26 @@
         let cart = [];
         let currentCategory = 'all';
         let allProducts = [];
+
+        // Location tracking variables
+        let userLocation = null;
+        let deliveryInfo = {
+            distance: null,
+            duration: null,
+            fee: 0,
+            inServiceArea: false
+        };
+
+        // Service area configuration (can be moved to backend later)
+        const serviceConfig = {
+            centerLat: 17.385044,  // Hyderabad center (example)
+            centerLng: 78.486671,
+            maxRadius: 25, // 25km radius
+            freeDeliveryRadius: 10, // Free delivery within 10km
+            deliveryFeePerKm: 5, // ₹5 per km beyond free radius
+            minDeliveryFee: 20, // Minimum delivery fee
+            maxDeliveryFee: 100 // Maximum delivery fee
+        };
 
         // Initialize the app
         document.addEventListener('DOMContentLoaded', function() {
@@ -3368,8 +3544,37 @@
                 </div>
                 
                 <div class="form-group">
-                    <label for="fullAddress">Full Address:</label>
-                    <textarea id="fullAddress" rows="3" required></textarea>
+                    <label for="fullAddress">Complete Address *</label>
+                    <div class="address-input-container">
+                        <textarea id="fullAddress" rows="3" placeholder="Street, Area, Landmark, City, Pincode" required></textarea>
+                        <div class="location-actions">
+                            <button type="button" class="location-btn" onclick="getCurrentLocation()" title="Get current location">
+                                <i class="fas fa-location-arrow"></i>
+                                <span>Use Current Location</span>
+                            </button>
+                            <button type="button" class="location-btn verify-btn" onclick="verifyAddress()" title="Verify delivery area">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>Verify Address</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="locationStatus" class="location-status"></div>
+                </div>
+
+                <div id="deliveryInfo" class="delivery-info">
+                    <h4><i class="fas fa-shipping-fast"></i> Delivery Information</h4>
+                    <div class="info-item">
+                        <span class="info-label">Distance:</span>
+                        <span class="info-value" id="deliveryDistance">Click "Verify Address" to check</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Estimated Time:</span>
+                        <span class="info-value" id="deliveryTime">-</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Delivery Area:</span>
+                        <span class="info-value" id="deliveryArea">Pending verification</span>
+                    </div>
                 </div>
                 
                 <div class="form-group">
@@ -3777,6 +3982,297 @@
         // Initialize organic features
         document.addEventListener('DOMContentLoaded', function() {
             addOrganicBadges();
+        });
+
+        // Location Tracking Functions
+        async function getCurrentLocation() {
+            const locationBtn = document.querySelector('.location-btn');
+            const locationStatus = document.getElementById('locationStatus');
+            
+            // Update button state
+            locationBtn.disabled = true;
+            locationBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Getting Location...</span>';
+            
+            // Show status
+            showLocationStatus('Requesting location permission...', 'info');
+            
+            if (!navigator.geolocation) {
+                showLocationStatus('Geolocation is not supported by this browser', 'error');
+                resetLocationButton();
+                return;
+            }
+            
+            navigator.geolocation.getCurrentPosition(
+                async (position) => {
+                    userLocation = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
+                    
+                    showLocationStatus('Location found! Getting address...', 'info');
+                    
+                    try {
+                        // Get address from coordinates (using reverse geocoding)
+                        const address = await reverseGeocode(userLocation.lat, userLocation.lng);
+                        document.getElementById('fullAddress').value = address;
+                        
+                        showLocationStatus('Location successfully added to address!', 'success');
+                        
+                        // Automatically verify the location
+                        await verifyAddress();
+                        
+                    } catch (error) {
+                        console.error('Error getting address:', error);
+                        showLocationStatus('Location found but could not get address. Please enter manually.', 'warning');
+                    }
+                    
+                    resetLocationButton();
+                },
+                (error) => {
+                    let errorMessage = 'Could not get your location. ';
+                    
+                    switch(error.code) {
+                        case error.PERMISSION_DENIED:
+                            errorMessage += 'Location access denied. Please enable location services.';
+                            break;
+                        case error.POSITION_UNAVAILABLE:
+                            errorMessage += 'Location information unavailable.';
+                            break;
+                        case error.TIMEOUT:
+                            errorMessage += 'Location request timed out.';
+                            break;
+                        default:
+                            errorMessage += 'An unknown error occurred.';
+                            break;
+                    }
+                    
+                    showLocationStatus(errorMessage, 'error');
+                    resetLocationButton();
+                },
+                {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 300000 // 5 minutes
+                }
+            );
+        }
+
+        async function verifyAddress() {
+            const addressTextarea = document.getElementById('fullAddress');
+            const address = addressTextarea.value.trim();
+            
+            if (!address) {
+                showLocationStatus('Please enter an address first', 'error');
+                return;
+            }
+            
+            const verifyBtn = document.querySelector('.verify-btn');
+            verifyBtn.disabled = true;
+            verifyBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Verifying...</span>';
+            
+            try {
+                showLocationStatus('Verifying delivery area...', 'info');
+                
+                // Get coordinates from address if we don't have user location
+                if (!userLocation) {
+                    userLocation = await geocodeAddress(address);
+                }
+                
+                // Calculate delivery information
+                await calculateDeliveryInfo();
+                
+                // Update delivery info display
+                updateDeliveryInfoDisplay();
+                
+                if (deliveryInfo.inServiceArea) {
+                    showLocationStatus('✅ Address verified! We deliver to this area.', 'success');
+                } else {
+                    showLocationStatus('❌ Sorry, we don\'t deliver to this area yet.', 'error');
+                }
+                
+            } catch (error) {
+                console.error('Error verifying address:', error);
+                showLocationStatus('Could not verify address. Please check and try again.', 'error');
+            }
+            
+            // Reset verify button
+            verifyBtn.disabled = false;
+            verifyBtn.innerHTML = '<i class="fas fa-map-marker-alt"></i> <span>Verify Address</span>';
+        }
+
+        async function reverseGeocode(lat, lng) {
+            // For demo purposes, we'll create a mock address
+            // In production, you would use a real geocoding service like Google Maps API
+            
+            // Mock addresses for demo (you can replace with real API)
+            const mockAddresses = [
+                "123 Green Valley Road, Banjara Hills, Hyderabad, Telangana 500034",
+                "456 Organic Street, Jubilee Hills, Hyderabad, Telangana 500033", 
+                "789 Fresh Market Lane, Gachibowli, Hyderabad, Telangana 500032",
+                "101 Farm Fresh Avenue, Kondapur, Hyderabad, Telangana 500084"
+            ];
+            
+            // Simulate API delay
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            // Return a mock address based on coordinates
+            const index = Math.floor((lat + lng) * 100) % mockAddresses.length;
+            return mockAddresses[index];
+        }
+
+        async function geocodeAddress(address) {
+            // For demo purposes, return mock coordinates
+            // In production, you would use a real geocoding service
+            
+            // Simulate API delay
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            // Return mock coordinates (Hyderabad area)
+            return {
+                lat: serviceConfig.centerLat + (Math.random() - 0.5) * 0.1,
+                lng: serviceConfig.centerLng + (Math.random() - 0.5) * 0.1
+            };
+        }
+
+        function calculateDistance(lat1, lng1, lat2, lng2) {
+            const R = 6371; // Radius of the Earth in kilometers
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLng = (lng2 - lng1) * Math.PI / 180;
+            const a = 
+                Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+                Math.sin(dLng/2) * Math.sin(dLng/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            const distance = R * c; // Distance in kilometers
+            return distance;
+        }
+
+        async function calculateDeliveryInfo() {
+            if (!userLocation) {
+                throw new Error('No location available');
+            }
+            
+            // Calculate distance from service center
+            const distance = calculateDistance(
+                userLocation.lat, 
+                userLocation.lng,
+                serviceConfig.centerLat,
+                serviceConfig.centerLng
+            );
+            
+            deliveryInfo.distance = distance;
+            deliveryInfo.inServiceArea = distance <= serviceConfig.maxRadius;
+            
+            if (deliveryInfo.inServiceArea) {
+                // Calculate delivery fee
+                if (distance <= serviceConfig.freeDeliveryRadius) {
+                    deliveryInfo.fee = 0;
+                } else {
+                    const extraDistance = distance - serviceConfig.freeDeliveryRadius;
+                    deliveryInfo.fee = Math.min(
+                        Math.max(extraDistance * serviceConfig.deliveryFeePerKm, serviceConfig.minDeliveryFee),
+                        serviceConfig.maxDeliveryFee
+                    );
+                }
+                
+                // Calculate estimated delivery time (assuming 30 km/h average speed + 30 min processing)
+                deliveryInfo.duration = Math.round(30 + (distance / 30) * 60); // minutes
+            } else {
+                deliveryInfo.fee = 0;
+                deliveryInfo.duration = null;
+            }
+        }
+
+        function updateDeliveryInfoDisplay() {
+            const deliveryInfoDiv = document.getElementById('deliveryInfo');
+            const distanceEl = document.getElementById('deliveryDistance');
+            const timeEl = document.getElementById('deliveryTime');
+            const areaEl = document.getElementById('deliveryArea');
+            const checkoutDelivery = document.getElementById('checkoutDelivery');
+            const checkoutTotal = document.getElementById('checkoutTotal');
+            
+            if (deliveryInfo.distance !== null) {
+                distanceEl.textContent = `${deliveryInfo.distance.toFixed(1)} km`;
+                deliveryInfoDiv.classList.add('show');
+                
+                if (deliveryInfo.inServiceArea) {
+                    timeEl.textContent = `${deliveryInfo.duration} minutes`;
+                    areaEl.textContent = 'Available ✅';
+                    areaEl.style.color = '#27ae60';
+                    
+                    // Update delivery fee
+                    if (deliveryInfo.fee === 0) {
+                        checkoutDelivery.textContent = 'FREE';
+                        checkoutDelivery.className = 'delivery-free';
+                    } else {
+                        checkoutDelivery.textContent = `₹${deliveryInfo.fee}`;
+                        checkoutDelivery.className = 'delivery-charge';
+                    }
+                    
+                    // Update total
+                    updateCheckoutTotals();
+                } else {
+                    timeEl.textContent = 'Not available';
+                    areaEl.textContent = 'Outside service area ❌';
+                    areaEl.style.color = '#e74c3c';
+                }
+            }
+        }
+
+        function updateCheckoutTotals() {
+            const subtotal = cart.reduce((sum, item) => {
+                return sum + (item.total_price || item.price * item.quantity);
+            }, 0);
+            
+            const total = subtotal + deliveryInfo.fee;
+            
+            document.getElementById('checkoutSubtotal').textContent = subtotal.toFixed(2);
+            document.getElementById('checkoutTotal').textContent = total.toFixed(2);
+        }
+
+        function showLocationStatus(message, type) {
+            const statusEl = document.getElementById('locationStatus');
+            statusEl.textContent = message;
+            statusEl.className = `location-status ${type}`;
+        }
+
+        function resetLocationButton() {
+            const locationBtn = document.querySelector('.location-btn');
+            locationBtn.disabled = false;
+            locationBtn.innerHTML = '<i class="fas fa-location-arrow"></i> <span>Use Current Location</span>';
+        }
+
+        // Add location validation to checkout form
+        async function handleCheckoutSubmit(event) {
+            event.preventDefault();
+            
+            const address = document.getElementById('fullAddress').value.trim();
+            if (!address) {
+                showLocationStatus('Please enter a delivery address', 'error');
+                return;
+            }
+            
+            // Verify address if not already done
+            if (!deliveryInfo.inServiceArea && userLocation === null) {
+                showNotification('Please verify your delivery address first', 'error');
+                return;
+            }
+            
+            if (!deliveryInfo.inServiceArea) {
+                showNotification('Sorry, we don\'t deliver to this area yet', 'error');
+                return;
+            }
+            
+            // Proceed with regular checkout
+            await placeOrder();
+        }
+
+        // Override the existing checkout form submission
+        document.addEventListener('DOMContentLoaded', function() {
+            const checkoutForm = document.getElementById('checkoutForm');
+            if (checkoutForm) {
+                checkoutForm.addEventListener('submit', handleCheckoutSubmit);
+            }
         });
     </script>
 
