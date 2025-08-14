@@ -1,0 +1,96 @@
+{
+  "app": {
+    "name": "GreenObasket",
+    "displayName": "GreenObasket - Organic Groceries",
+    "version": "1.0.0",
+    "buildNumber": "1",
+    "bundleId": {
+      "ios": "com.greenobasket.mobile",
+      "android": "com.greenobasket.mobile"
+    }
+  },
+  "theme": {
+    "primaryColor": "#2ecc71",
+    "secondaryColor": "#27ae60",
+    "accentColor": "#f39c12",
+    "backgroundColor": "#f8f9fa",
+    "surfaceColor": "#ffffff",
+    "textColor": "#2c3e50",
+    "textLightColor": "#7f8c8d",
+    "errorColor": "#e74c3c",
+    "successColor": "#2ecc71",
+    "warningColor": "#f39c12"
+  },
+  "features": {
+    "authentication": true,
+    "guestMode": true,
+    "socialLogin": false,
+    "biometricLogin": false,
+    "pushNotifications": true,
+    "locationServices": true,
+    "barcodeScanner": true,
+    "cameraAccess": true,
+    "offlineMode": true,
+    "darkMode": false,
+    "multiLanguage": false
+  },
+  "permissions": {
+    "android": [
+      "INTERNET",
+      "ACCESS_NETWORK_STATE",
+      "ACCESS_FINE_LOCATION",
+      "ACCESS_COARSE_LOCATION",
+      "CAMERA",
+      "WRITE_EXTERNAL_STORAGE",
+      "READ_EXTERNAL_STORAGE",
+      "VIBRATE",
+      "RECEIVE_BOOT_COMPLETED",
+      "WAKE_LOCK"
+    ],
+    "ios": [
+      "NSCameraUsageDescription",
+      "NSLocationWhenInUseUsageDescription",
+      "NSLocationAlwaysAndWhenInUseUsageDescription",
+      "NSPhotoLibraryUsageDescription",
+      "NSMicrophoneUsageDescription"
+    ]
+  },
+  "deepLinks": {
+    "scheme": "greenobasket",
+    "host": "app",
+    "paths": {
+      "product": "/product/{id}",
+      "category": "/category/{name}",
+      "cart": "/cart",
+      "orders": "/orders",
+      "profile": "/profile"
+    }
+  },
+  "analytics": {
+    "enabled": true,
+    "provider": "firebase",
+    "trackScreenViews": true,
+    "trackUserActions": true,
+    "trackErrors": true
+  },
+  "payment": {
+    "providers": ["razorpay", "cod", "upi"],
+    "currency": "INR",
+    "minimumOrderAmount": 99,
+    "freeDeliveryAmount": 499
+  },
+  "delivery": {
+    "radiusKm": 25,
+    "freeDeliveryRadiusKm": 10,
+    "deliveryFeePerKm": 5,
+    "minimumDeliveryFee": 20,
+    "maximumDeliveryFee": 100,
+    "estimatedDeliveryTime": "30-60 minutes"
+  },
+  "support": {
+    "email": "support@greenobasket.com",
+    "phone": "+91-XXXXXXXXXX",
+    "website": "https://greenobasket.com",
+    "helpUrl": "https://greenobasket.com/help"
+  }
+}
