@@ -1837,12 +1837,45 @@
 
         // Initialize the app
         document.addEventListener('DOMContentLoaded', function() {
-            // Redirect to login if not authenticated
+            // Auto-create guest session if no authentication
             if (!userToken) {
-                window.location.href = '/';
-                return;
+                createGuestSession().then(() => {
+                    initializeApp();
+                });
+            } else {
+                initializeApp();
             }
-            
+        });
+
+        // Create guest session automatically
+        async function createGuestSession() {
+            try {
+                const response = await fetch('/api/user/guest-session', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    userToken = data.session_token;
+                    currentUser = data.user;
+                    
+                    localStorage.setItem('userToken', userToken);
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    
+                    console.log('Guest session created successfully');
+                } else {
+                    console.error('Failed to create guest session:', data.error);
+                }
+            } catch (error) {
+                console.error('Error creating guest session:', error);
+            }
+        }
+
+        // Initialize app functionality
+        function initializeApp() {
             checkUserAuth();
             loadProducts();
             loadCategories();
@@ -1873,7 +1906,7 @@
             document.getElementById('searchInput').addEventListener('input', function(e) {
                 searchProducts(e.target.value);
             });
-        });
+        }
 
         // Check user authentication status
         function checkUserAuth() {

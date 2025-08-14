@@ -845,7 +845,19 @@ def find_user_by_email(email):
 # Routes
 @app.route('/')
 def home():
-    """Serve the user login page"""
+    """Serve the main grocery app directly (no login required)"""
+    try:
+        import os
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        html_path = os.path.join(current_dir, '..', 'frontend', 'grocery_app.html')
+        with open(html_path, 'r') as file:
+            return render_template_string(file.read())
+    except FileNotFoundError:
+        return jsonify({"error": "Grocery app not found"}), 404
+
+@app.route('/login')
+def login_page():
+    """Serve the user login page (optional)"""
     try:
         import os
         current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -1501,6 +1513,40 @@ def save_customer_info():
         }), 400
 
 # User Authentication Routes
+@app.route('/api/user/guest-session', methods=['POST'])
+def create_guest_session():
+    """Create a guest session for shopping without registration"""
+    try:
+        # Generate a guest user identifier
+        guest_mobile = f"guest_{uuid.uuid4().hex[:8]}"
+        session_token = generate_session_token()
+        
+        # Create guest user in users_db
+        users_db[guest_mobile] = {
+            'password': 'guest',  # Not used for guest
+            'name': 'Guest User',
+            'address': '',
+            'email': '',
+            'created_at': datetime.now(),
+            'is_guest': True
+        }
+        
+        # Store session
+        user_sessions[session_token] = guest_mobile
+        
+        return jsonify({
+            "success": True,
+            "session_token": session_token,
+            "user": {
+                "mobile": guest_mobile,
+                "name": "Guest User",
+                "is_guest": True
+            },
+            "message": "Guest session created"
+        })
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
 @app.route('/api/user/register', methods=['POST'])
 def register_user():
     """Register a new user"""
