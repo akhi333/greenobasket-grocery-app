@@ -1,0 +1,37 @@
+{
+  "firebase": {
+    "apiKey": "YOUR_FIREBASE_API_KEY",
+    "authDomain": "greenobasket-mobile.firebaseapp.com",
+    "projectId": "greenobasket-mobile",
+    "storageBucket": "greenobasket-mobile.appspot.com",
+    "messagingSenderId": "YOUR_SENDER_ID",
+    "appId": "YOUR_APP_ID",
+    "measurementId": "YOUR_MEASUREMENT_ID"
+  },
+  "cloudMessaging": {
+    "enabled": true,
+    "vapidKey": "YOUR_VAPID_KEY",
+    "topics": [
+      "order_updates",
+      "promotional_offers",
+      "stock_alerts",
+      "general_notifications"
+    ]
+  },
+  "analytics": {
+    "enabled": true,
+    "debugMode": false
+  },
+  "crashlytics": {
+    "enabled": true,
+    "collectUserIds": false
+  },
+  "setup_instructions": {
+    "step1": "Create Firebase project at https://console.firebase.google.com/",
+    "step2": "Enable Cloud Messaging in Firebase console",
+    "step3": "Download google-services.json for Android",
+    "step4": "Download GoogleService-Info.plist for iOS",
+    "step5": "Replace placeholders in this file with actual values",
+    "step6": "Follow Firebase setup guide in main documentation"
+  }
+}

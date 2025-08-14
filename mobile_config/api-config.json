@@ -1,0 +1,53 @@
+{
+  "development": {
+    "baseURL": "http://10.0.2.2:5001/api",
+    "webURL": "http://localhost:5001",
+    "timeout": 10000
+  },
+  "production": {
+    "baseURL": "https://your-production-domain.com/api",
+    "webURL": "https://your-production-domain.com",
+    "timeout": 15000
+  },
+  "endpoints": {
+    "auth": {
+      "login": "/user/login",
+      "register": "/user/register",
+      "logout": "/user/logout",
+      "profile": "/user/profile",
+      "orders": "/user/orders",
+      "forgotPassword": "/user/forgot-password",
+      "verifyOTP": "/user/verify-otp",
+      "resetPassword": "/user/reset-password"
+    },
+    "products": {
+      "list": "/products",
+      "detail": "/products/{id}",
+      "categories": "/categories",
+      "search": "/products/search"
+    },
+    "cart": {
+      "get": "/cart",
+      "add": "/cart/add",
+      "update": "/cart/update",
+      "remove": "/cart/remove",
+      "clear": "/cart/clear"
+    },
+    "orders": {
+      "create": "/orders",
+      "list": "/orders",
+      "detail": "/orders/{id}",
+      "prepare": "/orders/prepare",
+      "confirm": "/orders/confirm"
+    },
+    "customer": {
+      "info": "/customer-info",
+      "addresses": "/customer-info/addresses"
+    }
+  },
+  "apiKeys": {
+    "googleMaps": "YOUR_GOOGLE_MAPS_API_KEY",
+    "firebase": "YOUR_FIREBASE_API_KEY",
+    "razorpay": "YOUR_RAZORPAY_KEY_ID"
+  }
+}
