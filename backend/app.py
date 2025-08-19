@@ -30,6 +30,49 @@ user_sessions = {}  # {session_token: mobile_number}
 # OTP storage for forgot password
 otp_storage = {}  # {mobile_or_email: {otp: str, expires_at: datetime, type: 'mobile'|'email'}}
 
+# Staff management storage
+staff_db = {
+    "1": {
+        "id": "1",
+        "name": "Ravi Kumar",
+        "email": "ravi@greenobasket.com",
+        "phone": "9876543210",
+        "role": "Store Manager",
+        "department": "Operations",
+        "hire_date": "2023-01-15",
+        "salary": 45000,
+        "address": "123 MG Road, Bangalore",
+        "status": "active",
+        "created_at": datetime.now().isoformat()
+    },
+    "2": {
+        "id": "2",
+        "name": "Priya Singh",
+        "email": "priya@greenobasket.com",
+        "phone": "9876543211",
+        "role": "Delivery Executive",
+        "department": "Logistics",
+        "hire_date": "2023-03-20",
+        "salary": 25000,
+        "address": "456 Brigade Road, Bangalore",
+        "status": "active",
+        "created_at": datetime.now().isoformat()
+    },
+    "3": {
+        "id": "3",
+        "name": "Arjun Patel",
+        "email": "arjun@greenobasket.com",
+        "phone": "9876543212",
+        "role": "Quality Checker",
+        "department": "Quality Control",
+        "hire_date": "2023-02-10",
+        "salary": 30000,
+        "address": "789 Commercial Street, Bangalore",
+        "status": "active",
+        "created_at": datetime.now().isoformat()
+    }
+}
+
 # In-memory database for products (extended with quantity types)
 products_db = {
     "1": {
@@ -50,7 +93,8 @@ products_db = {
         "farm_source": "Green Valley Organic Farms, Maharashtra",
         "pesticide_free": True,
         "gmo_free": True,
-        "carbon_footprint": "Low"
+        "carbon_footprint": "Low",
+        "rating": 4.5
     },
     "2": {
         "id": "2",
@@ -2147,6 +2191,15 @@ def not_found(error):
 def internal_error(error):
     return jsonify({"success": False, "error": "Internal server error"}), 500
 
+# Initialize products with ratings if missing
+def initialize_product_ratings():
+    """Add ratings to products that don't have them"""
+    import random
+    for product_id, product in products_db.items():
+        if 'rating' not in product:
+            # Assign random rating between 3.5 and 5.0
+            product['rating'] = round(random.uniform(3.5, 5.0), 1)
+
 # Admin authentication helper
 def is_admin_authenticated():
     return session.get('admin_logged_in', False)
@@ -2388,6 +2441,106 @@ def admin_toggle_product_visibility(product_id):
         "visible": product['visible']
     })
 
+# Staff Management API Routes
+
+@app.route('/api/admin/staff', methods=['GET'])
+def get_all_staff():
+    """Get all staff members (Admin only)"""
+    if not is_admin_authenticated():
+        return jsonify({"success": False, "error": "Unauthorized"}), 401
+    
+    return jsonify({
+        "success": True,
+        "staff": list(staff_db.values()),
+        "total": len(staff_db)
+    })
+
+@app.route('/api/admin/staff', methods=['POST'])
+def add_staff():
+    """Add a new staff member (Admin only)"""
+    if not is_admin_authenticated():
+        return jsonify({"success": False, "error": "Unauthorized"}), 401
+    
+    try:
+        data = request.get_json()
+        
+        # Generate new staff ID
+        new_id = str(max([int(id) for id in staff_db.keys()]) + 1) if staff_db else "1"
+        
+        staff_member = {
+            "id": new_id,
+            "name": data.get('name'),
+            "email": data.get('email'),
+            "phone": data.get('phone'),
+            "role": data.get('role'),
+            "department": data.get('department'),
+            "hire_date": data.get('hire_date'),
+            "salary": float(data.get('salary', 0)),
+            "address": data.get('address'),
+            "status": data.get('status', 'active'),
+            "created_at": datetime.now().isoformat()
+        }
+        
+        staff_db[new_id] = staff_member
+        
+        return jsonify({
+            "success": True,
+            "message": "Staff member added successfully",
+            "staff": staff_member
+        })
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route('/api/admin/staff/<staff_id>', methods=['PUT'])
+def update_staff(staff_id):
+    """Update a staff member (Admin only)"""
+    if not is_admin_authenticated():
+        return jsonify({"success": False, "error": "Unauthorized"}), 401
+    
+    if staff_id not in staff_db:
+        return jsonify({"success": False, "error": "Staff member not found"}), 404
+    
+    try:
+        data = request.get_json()
+        staff = staff_db[staff_id]
+        
+        # Update staff information
+        staff.update({
+            "name": data.get('name', staff['name']),
+            "email": data.get('email', staff['email']),
+            "phone": data.get('phone', staff['phone']),
+            "role": data.get('role', staff['role']),
+            "department": data.get('department', staff['department']),
+            "hire_date": data.get('hire_date', staff['hire_date']),
+            "salary": float(data.get('salary', staff['salary'])),
+            "address": data.get('address', staff['address']),
+            "status": data.get('status', staff['status']),
+        })
+        
+        return jsonify({
+            "success": True,
+            "message": "Staff member updated successfully",
+            "staff": staff
+        })
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route('/api/admin/staff/<staff_id>', methods=['DELETE'])
+def delete_staff(staff_id):
+    """Delete a staff member (Admin only)"""
+    if not is_admin_authenticated():
+        return jsonify({"success": False, "error": "Unauthorized"}), 401
+    
+    if staff_id not in staff_db:
+        return jsonify({"success": False, "error": "Staff member not found"}), 404
+    
+    del staff_db[staff_id]
+    
+    return jsonify({
+        "success": True,
+        "message": "Staff member deleted successfully"
+    })
+
 # Location tracking endpoints
 @app.route('/api/location/verify', methods=['POST'])
 def verify_location():
@@ -2599,6 +2752,10 @@ if __name__ == '__main__':
     print(f"Username: {ADMIN_USERNAME}")
     print(f"Password: {ADMIN_PASSWORD}")
     print("=" * 60)
+    
+    # Initialize product ratings
+    initialize_product_ratings()
+    print("✅ Product ratings initialized")
     
     app.run(debug=True, host='0.0.0.0', port=5001)
 
