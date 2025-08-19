@@ -2541,6 +2541,24 @@ def delete_staff(staff_id):
         "message": "Staff member deleted successfully"
     })
 
+# Debug/Utility endpoints
+
+@app.route('/api/admin/init-ratings', methods=['POST'])
+def initialize_ratings_endpoint():
+    """Initialize product ratings (Admin only)"""
+    if not is_admin_authenticated():
+        return jsonify({"success": False, "error": "Unauthorized"}), 401
+    
+    try:
+        initialize_product_ratings()
+        return jsonify({
+            "success": True,
+            "message": "Product ratings initialized successfully",
+            "updated_count": len([p for p in products_db.values() if 'rating' in p])
+        })
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
 # Location tracking endpoints
 @app.route('/api/location/verify', methods=['POST'])
 def verify_location():
